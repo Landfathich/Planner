@@ -218,7 +218,7 @@ export class TaskManager {
 
     extractTasksFromDOM() {
         return Array.from(document.querySelectorAll('.task')).map(taskElement => {
-            const dateStr = taskElement.closest('.day-card')?.querySelector('.add-task-btn')?.dataset.date;
+            const dateStr = taskElement.closest('.day-card')?.querySelector('.add-day-task-btn')?.dataset.date;
             return dateStr ? {
                 id: taskElement.dataset.taskId,
                 date: new Date(dateStr),
@@ -269,7 +269,7 @@ export class TaskManager {
     }
 
     findDayCardByDate(dateString) {
-        return document.querySelector(`.add-task-btn[data-date="${dateString}"]`)?.closest('.day-card');
+        return document.querySelector(`.add-day-task-btn[data-date="${dateString}"]`)?.closest('.day-card');
     }
 
     updateDayStats(weekDates) {
@@ -305,7 +305,7 @@ export class TaskManager {
         const closeBtn = document.querySelector('.close');
         const form = document.getElementById('task-form');
 
-        document.querySelectorAll('.add-task-btn').forEach(btn => {
+        document.querySelectorAll('.add-day-task-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.getElementById('task-date').value = e.target.dataset.date;
                 modal.style.display = 'flex';

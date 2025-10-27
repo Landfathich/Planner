@@ -38,7 +38,7 @@
                                     <span class="points">
                                 {{ day.tasks.count }} задач / {{ day.earned_points }} баллов
                             </span>
-                                    <button class="add-task-btn" data-date="{{ day.date|date:'Y-m-d' }}">+</button>
+                                    <button class="add-day-task-btn" data-date="{{ day.date|date:'Y-m-d' }}">+</button>
                                 </div>
                             </div>
 
@@ -68,7 +68,7 @@
                     <div class="weekly-tasks-section">
                         <div class="section-header">
                             <h3>Задачи недели</h3>
-                            <button class="add-weekly-task-btn weekly-add-btn"
+                            <button class="add-weekly-task-btn"
                                     data-week-start="{{ week_start|date:'Y-m-d' }}">+
                             </button>
                         </div>
@@ -142,7 +142,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно для недельных задач -->
     <!-- Модальное окно для недельных задач -->
     <div id="weekly-task-modal" class="modal" style="display: none;">
         <div class="modal-content">
