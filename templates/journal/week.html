@@ -44,11 +44,14 @@
 
                             <ul class="task-list">
                                 {% for task in day.tasks.all %}
-                                    <li class="task general-task {% if task.is_done %}done{% endif %}" data-task-id="{{ task.id }}">
+                                    <li class="task general-task {% if task.is_done %}done{% endif %}"
+                                        data-task-id="{{ task.id }}">
                                         <div class="task-main general-task-main">
                                             <span class="task-title general-task-title">{{ task.title }}</span>
                                             <div class="task-actions general-task-actions">
-                                                <button class="task-toggle task-toggle-btn" title="Отметить выполненной">✓</button>
+                                                <button class="task-toggle task-toggle-btn"
+                                                        title="Отметить выполненной">✓
+                                                </button>
                                                 <button class="task-edit task-edit-btn" title="Редактировать">✎</button>
                                                 <button class="task-delete task-delete-btn" title="Удалить">×</button>
                                             </div>
@@ -68,8 +71,8 @@
                     <div class="weekly-tasks-section">
                         <div class="section-header">
                             <h3>Задачи недели</h3>
-                            <button class="add-weekly-task-btn"
-                                    data-week-start="{{ week_start|date:'Y-m-d' }}">+
+                            <button class="add-week-task-btn"
+                                    data-date="{% now 'Y-m-d' %}">+
                             </button>
                         </div>
 
@@ -143,7 +146,7 @@
     </div>
 
     <!-- Модальное окно для недельных задач -->
-    <div id="weekly-task-modal" class="modal" style="display: none;">
+    {% comment %}<div id="weekly-task-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h3 class="modal-title">Добавить задачу на неделю</h3>
@@ -161,7 +164,7 @@
                 <button type="submit" class="styled-button">Добавить</button>
             </form>
         </div>
-    </div>
+    </div>{% endcomment %}
 
     <!-- Модальное окно редактирования для дневных задач -->
     <div id="task-detail-modal" class="modal" style="display: none;">

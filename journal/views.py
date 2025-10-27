@@ -93,6 +93,7 @@ class WeekView(LoginRequiredMixin, TemplateView):
             date__range=[start_date, start_date + timedelta(days=6)],
             is_done=True
         ).count()
+        context['today_date'] = today
 
         logger.debug(f"Context for week page:\n{context}")
         return context

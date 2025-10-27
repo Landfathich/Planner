@@ -305,7 +305,7 @@ export class TaskManager {
         const closeBtn = document.querySelector('.close');
         const form = document.getElementById('task-form');
 
-        document.querySelectorAll('.add-day-task-btn').forEach(btn => {
+        document.querySelectorAll('.add-day-task-btn, .add-week-task-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.getElementById('task-date').value = e.target.dataset.date;
                 modal.style.display = 'flex';
@@ -332,6 +332,7 @@ export class TaskManager {
             date: formData.get('date'),
             is_done: false
         };
+        console.log(taskData)
 
         try {
             const result = await this.sendCreateTask(taskData);
