@@ -13,6 +13,7 @@ li {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    padding-top: 2px;
     width: 50%;
     overflow-y: auto;
     max-height: 70vh;
@@ -101,11 +102,19 @@ li {
 }
 
 .general-task {
+    box-sizing: inherit;
     padding: 10px;
     flex-grow: 1;
     border-radius: 4px;
     background: var(--light);
+    border: 1px solid transparent;
     border-left: 3px solid var(--success);
+}
+
+.general-task:hover {
+    border: 1px solid #5e81ac;
+    border-left: 3px solid var(--success);
+    cursor: pointer;
 }
 
 .general-task.done {

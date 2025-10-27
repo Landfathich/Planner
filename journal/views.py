@@ -59,7 +59,7 @@ class WeekView(LoginRequiredMixin, TemplateView):
         start_date = today - timedelta(days=today.weekday())
 
         days = []
-        day_names = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+        day_names = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
 
         for i in range(7):
             date = start_date + timedelta(days=i)
