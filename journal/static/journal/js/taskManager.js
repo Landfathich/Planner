@@ -169,10 +169,10 @@ export class TaskManager {
     }
 
     updateTaskInDOM(task) {
-        const taskElement = document.querySelector(`.task[data-task-id="${task.id}"]`);
+        const taskElement = document.querySelector(`.general-task[data-task-id="${task.id}"]`);
         if (!taskElement) return;
 
-        taskElement.querySelector('.task-title').textContent = task.title;
+        taskElement.querySelector('.general-task-title').textContent = task.title;
         taskElement.classList.toggle('done', task.is_done);
         this.updateTaskDescription(taskElement, task.description);
     }
