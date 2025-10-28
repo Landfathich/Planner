@@ -308,6 +308,7 @@ export class TaskManager {
         document.querySelectorAll('.add-day-task-btn, .add-week-task-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.getElementById('task-date').value = e.target.dataset.date;
+                document.getElementById('task-type').value = e.target.dataset.taskType;
                 modal.style.display = 'flex';
             });
         });
@@ -326,11 +327,13 @@ export class TaskManager {
 
     async createTask() {
         const formData = new FormData(document.getElementById('task-form'));
+
         const taskData = {
             title: formData.get('title'),
             description: formData.get('description'),
             date: formData.get('date'),
-            is_done: false
+            is_done: false,
+            is_weekly: formData.get('type') === "week"
         };
         console.log(taskData)
 
