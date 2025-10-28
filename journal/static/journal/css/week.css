@@ -112,9 +112,16 @@ li {
 }
 
 .general-task:hover {
-    border: 1px solid #5e81ac;
-    border-left: 3px solid var(--success);
     cursor: pointer;
+    border: 1px solid #5e81ac;
+}
+
+.day-task:hover {
+    border-left: 3px solid var(--success);
+}
+
+.weekly-task:hover {
+    border-left: 3px solid var(--second-primary);
 }
 
 .general-task.done {

@@ -33,7 +33,7 @@ export class TaskManager {
 
     setupTaskClickHandlers() {
         document.addEventListener('click', (e) => {
-            const taskElement = e.target.closest('.task');
+            const taskElement = e.target.closest('.general-task');
             if (!taskElement) return;
 
             const taskId = taskElement.dataset.taskId;
@@ -217,7 +217,7 @@ export class TaskManager {
     }
 
     extractTasksFromDOM() {
-        return Array.from(document.querySelectorAll('.task')).map(taskElement => {
+        return Array.from(document.querySelectorAll('.general-task')).map(taskElement => {
             const dateStr = taskElement.closest('.day-card')?.querySelector('.add-day-task-btn')?.dataset.date;
             return dateStr ? {
                 id: taskElement.dataset.taskId,
@@ -230,7 +230,7 @@ export class TaskManager {
 
     displayTasksForWeek(tasks, weekDates) {
         this.allTasks = [];
-        document.querySelectorAll('.task').forEach(task => task.remove());
+        document.querySelectorAll('.general-task').forEach(task => task.remove());
 
         tasks.forEach(task => this.addTaskToDOM(task));
         this.updateStatistics();
@@ -280,7 +280,7 @@ export class TaskManager {
             if (!dayCard) return;
 
             const taskList = dayCard.querySelector('.task-list');
-            const tasks = taskList?.querySelectorAll('.task') || [];
+            const tasks = taskList?.querySelectorAll('.general-task') || [];
             const doneTasks = taskList?.querySelectorAll('.task.done') || [];
             const pointsElement = dayCard.querySelector('.points');
 

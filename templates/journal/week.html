@@ -46,7 +46,7 @@
 
                             <ul class="task-list">
                                 {% for task in day.tasks.all %}
-                                    <li class="task general-task {% if task.is_done %}done{% endif %}"
+                                    <li class="day-task general-task {% if task.is_done %}done{% endif %}"
                                         data-task-id="{{ task.id }}">
                                         <div class="task-main general-task-main">
                                             <span class="task-title general-task-title">{{ task.title }}</span>
@@ -80,17 +80,19 @@
 
                         <ul class="weekly-task-list">
                             {% for task in weekly_tasks %}
-                                <li class="weekly-task {% if task.is_done %}done{% endif %}"
+                                <li class="weekly-task general-task {% if task.is_done %}done{% endif %}"
                                     data-task-id="{{ task.id }}" data-task-type="weekly">
-                                    <div class="weekly-task-main">
-                                        <span class="task-title">{{ task.title }}</span>
+                                    <div class="weekly-task-main general-task-main">
+                                        <span class="task-title general-task-title">{{ task.title }}</span>
                                         <div class="weekly-task-actions">
-                                            <button class="weekly-task-toggle task-toggle-btn"
+                                            <button class="weekly-task-toggle task-toggle-btn task-toggle"
                                                     title="Отметить выполненной">✓
                                             </button>
-                                            <button class="weekly-task-edit task-edit-btn" title="Редактировать">✎
+                                            <button class="weekly-task-edit task-edit-btn task-edit"
+                                                    title="Редактировать">✎
                                             </button>
-                                            <button class="weekly-task-delete task-delete-btn" title="Удалить">×
+                                            <button class="weekly-task-delete task-delete-btn task-delete"
+                                                    title="Удалить">×
                                             </button>
                                         </div>
                                     </div>
