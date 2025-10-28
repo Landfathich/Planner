@@ -193,7 +193,7 @@ export class TaskManager {
     }
 
     removeTaskFromDOM(taskId) {
-        const taskElement = document.querySelector(`.task[data-task-id="${taskId}"]`);
+        const taskElement = document.querySelector(`.general-task[data-task-id="${taskId}"]`);
         if (taskElement) {
             taskElement.remove();
             this.allTasks = this.allTasks.filter(t => t.id !== taskId);
@@ -218,7 +218,7 @@ export class TaskManager {
 
     extractTasksFromDOM() {
         return Array.from(document.querySelectorAll('.general-task')).map(taskElement => {
-            const dateStr = taskElement.closest('.day-card')?.querySelector('.add-day-task-btn')?.dataset.date;
+            const dateStr = taskElement.closest('.day-card')?.querySelector('.add-task-btn')?.dataset.date;
             return dateStr ? {
                 id: taskElement.dataset.taskId,
                 date: new Date(dateStr),
@@ -241,7 +241,7 @@ export class TaskManager {
         const dayCard = this.findDayCardByDate(task.date);
 
         if (dayCard) {
-            dayCard.querySelector('.task-list').appendChild(taskElement);
+            dayCard.querySelector('.general-task-list').appendChild(taskElement);
             this.allTasks.push({
                 id: task.id,
                 date: new Date(task.date),
@@ -269,7 +269,7 @@ export class TaskManager {
     }
 
     findDayCardByDate(dateString) {
-        return document.querySelector(`.add-day-task-btn[data-date="${dateString}"]`)?.closest('.day-card');
+        return document.querySelector(`.add-task-btn[data-date="${dateString}"]`)?.closest('.day-card');
     }
 
     updateDayStats(weekDates) {
@@ -305,7 +305,7 @@ export class TaskManager {
         const closeBtn = document.querySelector('.close');
         const form = document.getElementById('task-form');
 
-        document.querySelectorAll('.add-day-task-btn, .add-week-task-btn').forEach(btn => {
+        document.querySelectorAll('.add-task-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.getElementById('task-date').value = e.target.dataset.date;
                 document.getElementById('task-type').value = e.target.dataset.taskType;

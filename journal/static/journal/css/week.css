@@ -82,8 +82,7 @@ li {
     gap: 10px;
 }
 
-.add-day-task-btn,
-.add-week-task-btn {
+.add-task-btn {
     background: var(--success);
     color: white;
     border: none;
@@ -96,8 +95,7 @@ li {
     margin-left: 10px;
 }
 
-.add-day-task-btn:hover,
-.add-week-task-btn:hover {
+.add-task-btn:hover {
     background: var(--primary-hover);
 }
 

@@ -36,9 +36,9 @@
                                 <div>
                                     <span class="date">{{ day.date|date:"d.m" }}</span>
                                     <span class="points">
-                                {{ day.tasks.count }} задач / {{ day.earned_points }} баллов
+                                {{ day.tasks.count }} / {{ day.earned_points }} задач
                             </span>
-                                    <button class="add-day-task-btn" data-date="{{ day.date|date:'Y-m-d' }}"
+                                    <button class="add-task-btn" data-date="{{ day.date|date:'Y-m-d' }}"
                                             data-task-type="day">+
                                     </button>
                                 </div>
@@ -73,7 +73,7 @@
                     <div class="weekly-tasks-section">
                         <div class="section-header">
                             <h3>Задачи недели</h3>
-                            <button class="add-week-task-btn"
+                            <button class="add-task-btn"
                                     data-date="{% now 'Y-m-d' %}" data-task-type="week">+
                             </button>
                         </div>
