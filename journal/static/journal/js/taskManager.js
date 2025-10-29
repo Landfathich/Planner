@@ -33,7 +33,7 @@ export class TaskManager {
 
     setupTaskClickHandlers() {
         document.addEventListener('click', (e) => {
-            const taskElement = e.target.closest('.general-task');
+            const taskElement = e.target.closest('.task');
             if (!taskElement) return;
 
             const taskId = taskElement.dataset.taskId;
@@ -169,10 +169,10 @@ export class TaskManager {
     }
 
     updateTaskInDOM(task) {
-        const taskElement = document.querySelector(`.general-task[data-task-id="${task.id}"]`);
+        const taskElement = document.querySelector(`.task[data-task-id="${task.id}"]`);
         if (!taskElement) return;
 
-        taskElement.querySelector('.general-task-title').textContent = task.title;
+        taskElement.querySelector('.task-title').textContent = task.title;
         taskElement.classList.toggle('done', task.is_done);
         this.updateTaskDescription(taskElement, task.description);
     }
@@ -193,7 +193,7 @@ export class TaskManager {
     }
 
     removeTaskFromDOM(taskId) {
-        const taskElement = document.querySelector(`.general-task[data-task-id="${taskId}"]`);
+        const taskElement = document.querySelector(`.task[data-task-id="${taskId}"]`);
         if (taskElement) {
             taskElement.remove();
             this.allTasks = this.allTasks.filter(t => t.id !== taskId);
@@ -217,7 +217,7 @@ export class TaskManager {
     }
 
     extractTasksFromDOM() {
-        return Array.from(document.querySelectorAll('.general-task')).map(taskElement => {
+        return Array.from(document.querySelectorAll('.task')).map(taskElement => {
             const dateStr = taskElement.closest('.day-card')?.querySelector('.add-task-btn')?.dataset.date;
             return dateStr ? {
                 id: taskElement.dataset.taskId,
@@ -230,7 +230,7 @@ export class TaskManager {
 
     displayTasksForWeek(tasks, weekDates) {
         this.allTasks = [];
-        document.querySelectorAll('.general-task').forEach(task => task.remove());
+        document.querySelectorAll('.task').forEach(task => task.remove());
 
         tasks.forEach(task => this.addTaskToDOM(task));
         this.updateStatistics();
@@ -241,7 +241,7 @@ export class TaskManager {
         const dayCard = this.findDayCardByDate(task.date);
 
         if (dayCard) {
-            dayCard.querySelector('.general-task-list').appendChild(taskElement);
+            dayCard.querySelector('.task-list').appendChild(taskElement);
             this.allTasks.push({
                 id: task.id,
                 date: new Date(task.date),
@@ -252,18 +252,18 @@ export class TaskManager {
 
     createTaskElement(task) {
         const li = document.createElement('li');
-        li.className = `task general-task ${task.is_done ? 'done' : ''}`;
+        li.className = `task task ${task.is_done ? 'done' : ''}`;
         li.dataset.taskId = task.id;
         li.innerHTML = `
-            <div class="task-main general-task-main">
-                <span class="task-title general-task-title">${task.title}</span>
-                <div class="task-actions general-task-actions">
+            <div class="task-main task-main">
+                <span class="task-title task-title">${task.title}</span>
+                <div class="task-actions task-actions">
                     <button class="task-toggle task-toggle-btn">✓</button>
                     <button class="task-edit task-edit-btn">✎</button>
                     <button class="task-delete task-delete-btn">×</button>
                 </div>
             </div>
-            ${task.description ? `<div class="task-description general-task-description">${task.description}</div>` : ''}
+            ${task.description ? `<div class="task-description task-description">${task.description}</div>` : ''}
         `;
         return li;
     }
@@ -280,7 +280,7 @@ export class TaskManager {
             if (!dayCard) return;
 
             const taskList = dayCard.querySelector('.task-list');
-            const tasks = taskList?.querySelectorAll('.general-task') || [];
+            const tasks = taskList?.querySelectorAll('.task') || [];
             const doneTasks = taskList?.querySelectorAll('.task.done') || [];
             const pointsElement = dayCard.querySelector('.points');
 

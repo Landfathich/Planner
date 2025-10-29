@@ -99,7 +99,7 @@ li {
     background: var(--primary-hover);
 }
 
-.general-task {
+.task {
     box-sizing: inherit;
     padding: 10px;
     flex-grow: 1;
@@ -109,7 +109,7 @@ li {
     border-left: 3px solid var(--success);
 }
 
-.general-task:hover {
+.task:hover {
     cursor: pointer;
     border: 1px solid #5e81ac;
 }
@@ -122,31 +122,31 @@ li {
     border-left: 3px solid var(--second-primary);
 }
 
-.general-task.done {
+.task.done {
     opacity: 0.7;
     border-left-color: var(--text-secondary);
 }
 
-.general-task-main {
+.task-main {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.general-task-title {
+.task-title {
     flex-grow: 1;
 }
 
-.general-task.done .general-task-title {
+.task.done .task-title {
     text-decoration: line-through;
 }
 
-.general-task-actions {
+.task-actions {
     display: flex;
     gap: 5px;
 }
 
-.task-toggle-btn, .task-edit-btn, .task-delete-btn {
+.task-toggle, .task-edit, .task-delete {
     background: none;
     border: none;
     cursor: pointer;
@@ -154,19 +154,19 @@ li {
     padding: 2px 5px;
 }
 
-.task-toggle-btn {
+.task-toggle {
     color: var(--success);
 }
 
-.task-edit-btn {
+.task-edit {
     color: var(--primary);
 }
 
-.task-delete-btn {
+.task-delete {
     color: var(--danger);
 }
 
-.general-task-description {
+.task-description {
     margin-top: 5px;
     padding-top: 5px;
     border-top: 1px dashed var(--border-color);
@@ -308,7 +308,6 @@ li {
     max-height: 70vh;
 }
 
-.weekly-tasks-section,
 .misc-section {
     background: var(--card-bg);
     border-radius: 8px;
@@ -316,6 +315,11 @@ li {
     padding: 1rem;
     flex: 1;
     min-height: 0; /* Для правильного распределения пространства */
+}
+
+.misc-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .section-header {
