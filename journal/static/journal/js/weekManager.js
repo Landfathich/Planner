@@ -85,19 +85,4 @@ export class WeekManager {
         }
         return [];
     }
-
-
-    async loadWeeklyTasks(offset = 0) {
-        try {
-            const response = await fetch(`/api/tasks/weekly/week/?week_offset=${offset}`);
-            if (response.ok) {
-                const data = await response.json();
-                return data.tasks;
-            }
-        } catch (error) {
-            console.error('Error loading week tasks:', error);
-        }
-        return [];
-    }
-
 }
