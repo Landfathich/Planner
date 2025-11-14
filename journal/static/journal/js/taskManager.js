@@ -6,8 +6,6 @@ export class TaskManager {
         this.allTasks = this.extractTasksFromDOM();
         this.setupModalListeners();
         this.setupTaskListeners();
-
-        console.log("daily task manager initialized")
     }
 
     setupTaskListeners() {
@@ -123,18 +121,22 @@ export class TaskManager {
     }
 
     async deleteTask() {
-        if (!this.taskToDelete) return;
+    if (!this.taskToDelete) return;
 
-        try {
-            await this.sendDeleteRequest(this.taskToDelete);
-            this.removeTaskFromDOM(this.taskToDelete);
-            this.closeModalAndUpdateStats('confirm-modal');
-            showNotification('Задача удалена!', 'success');
-            this.taskToDelete = null;
-        } catch (error) {
-            this.handleError('Error deleting task:', error, 'Ошибка удаления задачи');
-        }
+    try {
+        await this.sendDeleteRequest(this.taskToDelete);
+        this.removeTaskFromDOM(this.taskToDelete);
+
+        // УДАЛЯЕМ ИЗ КЭША
+        this.weekManager.removeTaskFromCache(this.taskToDelete);
+
+        this.closeModalAndUpdateStats('confirm-modal');
+        showNotification('Задача удалена!', 'success');
+        this.taskToDelete = null;
+    } catch (error) {
+        this.handleError('Error deleting task:', error, 'Ошибка удаления задачи');
     }
+}
 
     async sendDeleteRequest(taskId) {
         const response = await fetch(`/api/tasks/${taskId}/delete/`, {
@@ -157,16 +159,20 @@ export class TaskManager {
     }
 
     async toggleTaskDone(taskId) {
-        try {
-            const task = await this.fetchTask(taskId);
-            const updatedTask = await this.sendTaskUpdate({...task, is_done: !task.is_done});
-            this.updateTaskInDOM(updatedTask);
-            this.updateStatistics();
-            showNotification('Задача обновлена!', 'success');
-        } catch (error) {
-            this.handleError('Error toggling task:', error, 'Ошибка обновления задачи');
-        }
+    try {
+        const task = await this.fetchTask(taskId);
+        const updatedTask = await this.sendTaskUpdate({...task, is_done: !task.is_done});
+        this.updateTaskInDOM(updatedTask);
+
+        // ОБНОВЛЯЕМ В КЭШЕ
+        this.weekManager.updateTaskInCache(updatedTask);
+
+        this.updateStatistics();
+        showNotification('Задача обновлена!', 'success');
+    } catch (error) {
+        this.handleError('Error toggling task:', error, 'Ошибка обновления задачи');
     }
+}
 
     updateTaskInDOM(task) {
         const taskElement = document.querySelector(`.task[data-task-id="${task.id}"]`);
@@ -193,12 +199,37 @@ export class TaskManager {
     }
 
     removeTaskFromDOM(taskId) {
-        const taskElement = document.querySelector(`.task[data-task-id="${taskId}"]`);
-        if (taskElement) {
-            taskElement.remove();
-            this.allTasks = this.allTasks.filter(t => t.id !== taskId);
+    const taskElement = document.querySelector(`.task[data-task-id="${taskId}"]`);
+    if (taskElement) {
+        taskElement.remove();
+        this.allTasks = this.allTasks.filter(t => t.id !== taskId);
+
+        // ПРОВЕРЯЕМ НЕ СТАЛ ЛИ СПИСОК НЕДЕЛЬНЫХ ЗАДАЧ ПУСТЫМ
+        this.checkAndUpdateWeeklyTasksList();
+    }
+}
+
+checkAndUpdateWeeklyTasksList() {
+    const weeklyTaskList = document.querySelector('.weekly-task-list');
+    if (!weeklyTaskList) return;
+
+    // Проверяем есть ли недельные задачи в DOM
+    const weeklyTasksInDOM = weeklyTaskList.querySelectorAll('.weekly-task');
+
+    if (weeklyTasksInDOM.length === 0) {
+        // Если нет недельных задач - показываем сообщение
+        const noTasksElement = document.createElement('li');
+        noTasksElement.className = 'no-tasks';
+        noTasksElement.textContent = 'Нет задач на неделю';
+        weeklyTaskList.appendChild(noTasksElement);
+    } else {
+        // Если есть задачи - удаляем сообщение "нет задач" если оно есть
+        const noTasksElement = weeklyTaskList.querySelector('.no-tasks');
+        if (noTasksElement) {
+            noTasksElement.remove();
         }
     }
+}
 
     getRequestHeaders() {
         return {
@@ -229,11 +260,44 @@ export class TaskManager {
     }
 
     displayTasksForWeek(tasks, weekDates) {
-        this.allTasks = [];
-        document.querySelectorAll('.task').forEach(task => task.remove());
+    // Очищаем все задачи
+    document.querySelectorAll('.task-list').forEach(list => list.innerHTML = '');
+    const weeklyTaskList = document.querySelector('.weekly-task-list');
+    weeklyTaskList.innerHTML = '';
 
-        tasks.forEach(task => this.addTaskToDOM(task));
-        this.updateStatistics();
+    // Разделяем задачи на дневные и недельные
+    const dailyTasks = tasks.filter(task => !task.is_weekly);
+    const weeklyTasks = tasks.filter(task => task.is_weekly);
+
+    // Отрисовываем дневные задачи по дням
+    dailyTasks.forEach(task => {
+        this.addTaskToDOM(task);
+    });
+
+    // Отрисовываем недельные задачи в своей секции
+    if (weeklyTasks.length === 0) {
+        // Если нет недельных задач - показываем сообщение
+        const noTasksElement = document.createElement('li');
+        noTasksElement.className = 'no-tasks';
+        noTasksElement.textContent = 'Нет задач на неделю';
+        weeklyTaskList.appendChild(noTasksElement);
+    } else {
+        // Если есть недельные задачи - отображаем их
+        weeklyTasks.forEach(task => {
+            this.addWeeklyTaskToDOM(task);
+        });
+    }
+
+    this.updateStatistics();
+}
+
+    addWeeklyTaskToDOM(task) {
+        const taskElement = this.createTaskElement(task);
+        const weeklyTaskList = document.querySelector('.weekly-task-list');
+
+        if (weeklyTaskList) {
+            weeklyTaskList.appendChild(taskElement);
+        }
     }
 
     addTaskToDOM(task) {
@@ -252,18 +316,18 @@ export class TaskManager {
 
     createTaskElement(task) {
         const li = document.createElement('li');
-        li.className = `task task ${task.is_done ? 'done' : ''}`;
+        li.className = `task ${task.is_weekly ? 'weekly-task' : 'day-task'} ${task.is_done ? 'done' : ''}`;
         li.dataset.taskId = task.id;
         li.innerHTML = `
-            <div class="task-main task-main">
-                <span class="task-title task-title">${task.title}</span>
-                <div class="task-actions task-actions">
-                    <button class="task-toggle task-toggle-btn">✓</button>
-                    <button class="task-edit task-edit-btn">✎</button>
-                    <button class="task-delete task-delete-btn">×</button>
+            <div class="task-main">
+                <span class="task-title">${task.title}</span>
+                <div class="task-actions">
+                    <button class="task-toggle">✓</button>
+                    <button class="task-edit">✎</button>
+                    <button class="task-delete">×</button>
                 </div>
             </div>
-            ${task.description ? `<div class="task-description task-description">${task.description}</div>` : ''}
+            ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
         `;
         return li;
     }
@@ -326,28 +390,68 @@ export class TaskManager {
     }
 
     async createTask() {
-        const formData = new FormData(document.getElementById('task-form'));
+    const formData = new FormData(document.getElementById('task-form'));
+    const isWeekly = formData.get('type') === "week";
 
-        const taskData = {
-            title: formData.get('title'),
-            description: formData.get('description'),
-            date: formData.get('date'),
-            is_done: false,
-            is_weekly: formData.get('type') === "week"
-        };
-        console.log(taskData)
+    const taskData = {
+        title: formData.get('title'),
+        description: formData.get('description'),
+        date: formData.get('date'),
+        is_done: false,
+        is_weekly: isWeekly
+    };
+    console.log(taskData)
 
-        try {
-            const result = await this.sendCreateTask(taskData);
+    try {
+        const result = await this.sendCreateTask(taskData);
+
+        // РАЗДЕЛЯЕМ ЛОГИКУ: недельные задачи идут в свою секцию
+        if (isWeekly) {
+            this.updateWeeklyTasks(result.tasks);
+            // Добавляем недельные задачи в кэш
+            result.tasks.forEach(task => {
+                this.weekManager.addTaskToCache(task);
+            });
+        } else {
             this.updateTasksForDate(result.tasks, taskData.date);
-            this.filterTasksForWeek(this.weekManager.getCurrentWeekDates());
-            document.getElementById('task-modal').style.display = 'none';
-            document.getElementById('task-form').reset();
-            showNotification('Задача успешно создана!', 'success');
-        } catch (error) {
-            this.handleError('Error creating task:', error, 'Ошибка создания задачи');
+            // Добавляем дневные задачи в кэш
+            result.tasks.forEach(task => {
+                this.weekManager.addTaskToCache(task);
+            });
         }
+
+        this.filterTasksForWeek(this.weekManager.getCurrentWeekDates());
+        document.getElementById('task-modal').style.display = 'none';
+        document.getElementById('task-form').reset();
+        showNotification('Задача успешно создана!', 'success');
+    } catch (error) {
+        this.handleError('Error creating task:', error, 'Ошибка создания задачи');
     }
+}
+
+   updateWeeklyTasks(tasks) {
+    const weeklyTaskList = document.querySelector('.weekly-task-list');
+    if (!weeklyTaskList) return;
+
+    weeklyTaskList.innerHTML = '';
+
+    if (tasks.length === 0) {
+        // Если нет задач - показываем сообщение
+        const noTasksElement = document.createElement('li');
+        noTasksElement.className = 'no-tasks';
+        noTasksElement.textContent = 'Нет задач на неделю';
+        weeklyTaskList.appendChild(noTasksElement);
+    } else {
+        // Если есть задачи - отображаем их
+        tasks.forEach(task => {
+            const taskElement = this.createTaskElement(task);
+            weeklyTaskList.appendChild(taskElement);
+        });
+    }
+
+    // Обновляем кэш задач
+    this.allTasks = this.extractTasksFromDOM();
+}
 
     async sendCreateTask(taskData) {
         const response = await fetch('/api/tasks/create/', {

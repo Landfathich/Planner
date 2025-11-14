@@ -23,7 +23,7 @@
                 </div>
 
                 <div class="week-stats">
-                    <span class="points">{{ total_points }} баллов</span>
+                    <span class="points">0 баллов</span>
                 </div>
             </div>
 
@@ -35,9 +35,7 @@
                                 <h3>{{ day.day_name }}</h3>
                                 <div>
                                     <span class="date">{{ day.date|date:"d.m" }}</span>
-                                    <span class="points">
-                                        {{ day.tasks.count }} / {{ day.earned_points }} задач
-                                    </span>
+                                    <span class="points">0 / 0 задач</span>
                                     <button class="add-task-btn" data-date="{{ day.date|date:'Y-m-d' }}"
                                             data-task-type="day">+
                                     </button>
@@ -45,24 +43,7 @@
                             </div>
 
                             <ul class="task-list">
-                                {% for task in day.tasks.all %}
-                                    <li class="task day-task {% if task.is_done %}done{% endif %}"
-                                        data-task-id="{{ task.id }}">
-                                        <div class="task-main">
-                                            <span class="task-title">{{ task.title }}</span>
-                                            <div class="task-actions">
-                                                <button class="task-toggle"
-                                                        title="Отметить выполненной">✓
-                                                </button>
-                                                <button class="task-edit" title="Редактировать">✎</button>
-                                                <button class="task-delete" title="Удалить">×</button>
-                                            </div>
-                                        </div>
-                                        {% if task.description %}
-                                            <div class="task-description">{{ task.description }}</div>
-                                        {% endif %}
-                                    </li>
-                                {% endfor %}
+                                <!-- Дневные задачи будут добавляться через JavaScript -->
                             </ul>
                         </div>
                     {% endfor %}
@@ -74,39 +55,16 @@
                         <div class="section-header">
                             <h3>Задачи недели</h3>
                             <button class="add-task-btn"
-                                    data-date="{% now 'Y-m-d' %}" data-task-type="week">+
+                                    data-date="{{ week_start|date:'Y-m-d' }}" data-task-type="week">+
                             </button>
                         </div>
 
                         <ul class="weekly-task-list">
-                            {% for task in weekly_tasks %}
-                                <li class="task weekly-task {% if task.is_done %}done{% endif %}"
-                                    data-task-id="{{ task.id }}" data-task-type="weekly">
-                                    <div class="task-main">
-                                        <span class="task-title">{{ task.title }}</span>
-                                        <div class="task-actions">
-                                            <button class="task-toggle"
-                                                    title="Отметить выполненной">✓
-                                            </button>
-                                            <button class="task-edit"
-                                                    title="Редактировать">✎
-                                            </button>
-                                            <button class="task-delete"
-                                                    title="Удалить">×
-                                            </button>
-                                        </div>
-                                    </div>
-                                    {% if task.description %}
-                                        <div class="task-description">{{ task.description }}</div>
-                                    {% endif %}
-                                </li>
-                            {% empty %}
-                                <li class="no-tasks">Нет задач на неделю</li>
-                            {% endfor %}
+                            <li class="no-tasks">Нет задач на неделю</li>
                         </ul>
                     </div>
 
-                    <!-- Заглушки для будущих секций -->
+                    <!-- Остальные секции без изменений -->
                     <div class="misc-section">
                         <div class="section-header">
                             <h3>Секция 2</h3>

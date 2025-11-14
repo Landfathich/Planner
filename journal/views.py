@@ -3,6 +3,7 @@ import logging
 from datetime import timedelta
 
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
@@ -99,8 +100,81 @@ class WeekView(LoginRequiredMixin, TemplateView):
         return context
 
 
+@login_required
+def week_tasks(request):
+    try:
+        week_offset = int(request.GET.get('week_offset', 0))
+
+        today = timezone.now().date()
+        start_date = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
+        end_date = start_date + timedelta(days=6)
+
+        print(f"Loading tasks for week {week_offset}: {start_date} to {end_date}")
+
+        # Получаем дневные задачи для этой недели
+        daily_tasks = Task.objects.filter(
+            user=request.user,
+            date__range=[start_date, end_date],
+            is_weekly=False
+        )
+
+        # Недельные задачи для ЭТОЙ недели (date = понедельник недели)
+        weekly_tasks = Task.objects.filter(
+            user=request.user,
+            is_weekly=True,
+            date__range=[start_date, end_date]
+        )
+
+        print(f"Found {daily_tasks.count()} daily tasks, {weekly_tasks.count()} weekly tasks")
+
+        # Формируем ответ
+        tasks_data = []
+
+        for task in daily_tasks:
+            # Защита от None
+            task_date = task.date if task.date else start_date
+            tasks_data.append({
+                'id': task.id,
+                'title': task.title,
+                'description': task.description or '',
+                'is_done': task.is_done,
+                'date': task_date.isoformat(),
+                'is_weekly': False
+            })
+
+        for task in weekly_tasks:
+            # Защита от None
+            task_date = task.date if task.date else start_date
+            tasks_data.append({
+                'id': task.id,
+                'title': task.title,
+                'description': task.description or '',
+                'is_done': task.is_done,
+                'date': task_date.isoformat(),
+                'is_weekly': True
+            })
+
+        print(f"Returning {len(tasks_data)} total tasks")
+
+        return JsonResponse({
+            'success': True,
+            'week_start': start_date.isoformat(),
+            'week_end': end_date.isoformat(),
+            'tasks': tasks_data
+        })
+
+    except Exception as e:
+        print(f"Error in week_tasks: {e}")
+        import traceback
+        print(traceback.format_exc())
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
 @csrf_exempt
 @require_POST
+@login_required
 def create_task(request):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Требуется авторизация'}, status=401)
@@ -147,6 +221,7 @@ def create_task(request):
         return JsonResponse({'error': str(e)}, status=400)
 
 
+@login_required
 @csrf_exempt
 def get_task(request, task_id):
     if not request.user.is_authenticated:
@@ -170,6 +245,7 @@ def get_task(request, task_id):
 
 @csrf_exempt
 @require_POST
+@login_required
 def update_task(request, task_id):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Требуется авторизация'}, status=401)
@@ -201,6 +277,7 @@ def update_task(request, task_id):
 
 @csrf_exempt
 @require_POST
+@login_required
 def delete_task(request, task_id):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Требуется авторизация'}, status=401)

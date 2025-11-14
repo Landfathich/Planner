@@ -6,6 +6,8 @@ from .views import WeekView
 urlpatterns = [
     path('', WeekView.as_view(), name='week'),
 
+    path('api/tasks/week/', views.week_tasks, name='api_week_tasks'),
+
     path('api/tasks/create/', views.create_task, name='create_task'),
     path('api/tasks/<int:task_id>/', views.get_task, name='get_task'),
     path('api/tasks/<int:task_id>/update/', views.update_task, name='update_task'),

@@ -4,7 +4,6 @@ import {TaskManager} from './taskManager.js';
 class DailyPlannerApp {
     constructor() {
         this.weekManager = new WeekManager();
-
         this.taskManager = new TaskManager(this.weekManager);
 
         this.setupEventListeners();
@@ -12,9 +11,7 @@ class DailyPlannerApp {
     }
 
     init() {
-        console.log("Daily Planner initialized");
-        //this.updateDisplay();
-        // TODO определить когда отрисовываться будет контекстом, а когда через запрос к апи через s
+        this.updateDisplay();
     }
 
     setupEventListeners() {
@@ -52,10 +49,13 @@ class DailyPlannerApp {
         const currentWeekDates = this.weekManager.getCurrentWeekDates();
         this.weekManager.updateWeekInfo();
 
-        // Загружаем задачи для текущей недели
-        const tasks = await this.weekManager.loadWeekTasks(this.weekManager.currentWeekOffset);
+        // Загружаем задачи с кэшированием
+        const tasks = await this.weekManager.loadWeekWithNeighbors(
+            this.weekManager.currentWeekOffset
+        );
+
         this.taskManager.displayTasksForWeek(tasks, currentWeekDates);
-        console.log(tasks)
+        console.log('Displayed tasks:', tasks);
     }
 }
 
