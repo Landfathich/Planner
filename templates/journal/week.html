@@ -16,9 +16,7 @@
                         <button id="prev-week" class="nav-button">←</button>
                         <button id="current-week" class="nav-button styled-button">Сегодня</button>
                     </div>
-                    <h2>Неделя: <span id="week-range">
-                        {{ week_start|date:"d.m.Y" }} — {{ week_end|date:"d.m.Y" }}
-                    </span></h2>
+                    <h2>Неделя: <span id="week-range"><!-- Даты будут обновляться через JS --></span></h2>
                     <button id="next-week" class="nav-button">→</button>
                 </div>
 
@@ -28,25 +26,90 @@
             </div>
 
             <div class="week-content">
-                <div class="days-column">
-                    {% for day in days %}
-                        <div class="day-card {% if day.today %}today{% endif %}">
-                            <div class="day-header">
-                                <h3>{{ day.day_name }}</h3>
-                                <div>
-                                    <span class="date">{{ day.date|date:"d.m" }}</span>
-                                    <span class="points">0 / 0 задач</span>
-                                    <button class="add-task-btn" data-date="{{ day.date|date:'Y-m-d' }}"
-                                            data-task-type="day">+
-                                    </button>
-                                </div>
+                <div class="days-column" id="days-container">
+                    <div class="day-card">
+                        <div class="day-header">
+                            <h3>Понедельник</h3>
+                            <div>
+                                <span class="date" data-date-format>дд.мм</span>
+                                <span class="points">0 / 0 задач</span>
+                                <button class="add-task-btn" data-task-type="day">+</button>
                             </div>
-
-                            <ul class="task-list">
-                                <!-- Дневные задачи будут добавляться через JavaScript -->
-                            </ul>
                         </div>
-                    {% endfor %}
+                        <ul class="task-list"></ul>
+                    </div>
+
+                    <div class="day-card">
+                        <div class="day-header">
+                            <h3>Вторник</h3>
+                            <div>
+                                <span class="date" data-date-format>дд.мм</span>
+                                <span class="points">0 / 0 задач</span>
+                                <button class="add-task-btn" data-task-type="day">+</button>
+                            </div>
+                        </div>
+                        <ul class="task-list"></ul>
+                    </div>
+
+                    <div class="day-card">
+                        <div class="day-header">
+                            <h3>Среда</h3>
+                            <div>
+                                <span class="date" data-date-format>дд.мм</span>
+                                <span class="points">0 / 0 задач</span>
+                                <button class="add-task-btn" data-task-type="day">+</button>
+                            </div>
+                        </div>
+                        <ul class="task-list"></ul>
+                    </div>
+
+                    <div class="day-card">
+                        <div class="day-header">
+                            <h3>Четверг</h3>
+                            <div>
+                                <span class="date" data-date-format>дд.мм</span>
+                                <span class="points">0 / 0 задач</span>
+                                <button class="add-task-btn" data-task-type="day">+</button>
+                            </div>
+                        </div>
+                        <ul class="task-list"></ul>
+                    </div>
+
+                    <div class="day-card">
+                        <div class="day-header">
+                            <h3>Пятница</h3>
+                            <div>
+                                <span class="date" data-date-format>дд.мм</span>
+                                <span class="points">0 / 0 задач</span>
+                                <button class="add-task-btn" data-task-type="day">+</button>
+                            </div>
+                        </div>
+                        <ul class="task-list"></ul>
+                    </div>
+
+                    <div class="day-card">
+                        <div class="day-header">
+                            <h3>Суббота</h3>
+                            <div>
+                                <span class="date" data-date-format>дд.мм</span>
+                                <span class="points">0 / 0 задач</span>
+                                <button class="add-task-btn" data-task-type="day">+</button>
+                            </div>
+                        </div>
+                        <ul class="task-list"></ul>
+                    </div>
+
+                    <div class="day-card">
+                        <div class="day-header">
+                            <h3>Воскресенье</h3>
+                            <div>
+                                <span class="date" data-date-format>дд.мм</span>
+                                <span class="points">0 / 0 задач</span>
+                                <button class="add-task-btn" data-task-type="day">+</button>
+                            </div>
+                        </div>
+                        <ul class="task-list"></ul>
+                    </div>
                 </div>
 
                 <div class="misc-column">
@@ -55,12 +118,13 @@
                         <div class="section-header">
                             <h3>Задачи недели</h3>
                             <button class="add-task-btn"
-                                    data-date="{{ week_start|date:'Y-m-d' }}" data-task-type="week">+
+                                    id="add-weekly-task-btn"
+                                    data-task-type="week">+
                             </button>
                         </div>
 
-                        <ul class="weekly-task-list">
-                            <li class="no-tasks">Нет задач на неделю</li>
+                        <ul class="weekly-task-list" id="weekly-tasks-list">
+                            <!-- Недельные задачи через JS -->
                         </ul>
                     </div>
 

@@ -55,48 +55,12 @@ class WeekView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         today = timezone.now().date()
         start_date = today - timedelta(days=today.weekday())
 
-        days = []
-        day_names = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
-
-        for i in range(7):
-            date = start_date + timedelta(days=i)
-            day_tasks = Task.objects.filter(
-                user=self.request.user,
-                date=date,
-                is_weekly=False
-            )
-
-            days.append({
-                'date': date,
-                'day_name': day_names[i],
-                'today': date == today,
-                'tasks': day_tasks,
-                'earned_points': day_tasks.filter(is_done=True).count()
-            })
-
-        # Get weekly tasks for current week
-        weekly_tasks = Task.objects.filter(
-            user=self.request.user,
-            is_weekly=True
-        )
-
-        context['days'] = days
-        context['weekly_tasks'] = weekly_tasks
         context['week_start'] = start_date
         context['week_end'] = start_date + timedelta(days=6)
-        context['week_number'] = start_date.isocalendar()[1]
-        context['total_points'] = Task.objects.filter(
-            user=self.request.user,
-            date__range=[start_date, start_date + timedelta(days=6)],
-            is_done=True
-        ).count()
         context['today_date'] = today
-
-        logger.debug(f"Context for week page:\n{context}")
         return context
 
 
@@ -109,52 +73,21 @@ def week_tasks(request):
         start_date = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
         end_date = start_date + timedelta(days=6)
 
-        print(f"Loading tasks for week {week_offset}: {start_date} to {end_date}")
-
-        # Получаем дневные задачи для этой недели
-        daily_tasks = Task.objects.filter(
+        tasks = Task.objects.filter(
             user=request.user,
-            date__range=[start_date, end_date],
-            is_weekly=False
-        )
-
-        # Недельные задачи для ЭТОЙ недели (date = понедельник недели)
-        weekly_tasks = Task.objects.filter(
-            user=request.user,
-            is_weekly=True,
             date__range=[start_date, end_date]
         )
 
-        print(f"Found {daily_tasks.count()} daily tasks, {weekly_tasks.count()} weekly tasks")
-
-        # Формируем ответ
         tasks_data = []
-
-        for task in daily_tasks:
-            # Защита от None
-            task_date = task.date if task.date else start_date
+        for task in tasks:
             tasks_data.append({
                 'id': task.id,
                 'title': task.title,
                 'description': task.description or '',
                 'is_done': task.is_done,
-                'date': task_date.isoformat(),
-                'is_weekly': False
+                'date': task.date.isoformat(),
+                'is_weekly': task.is_weekly
             })
-
-        for task in weekly_tasks:
-            # Защита от None
-            task_date = task.date if task.date else start_date
-            tasks_data.append({
-                'id': task.id,
-                'title': task.title,
-                'description': task.description or '',
-                'is_done': task.is_done,
-                'date': task_date.isoformat(),
-                'is_weekly': True
-            })
-
-        print(f"Returning {len(tasks_data)} total tasks")
 
         return JsonResponse({
             'success': True,
@@ -164,13 +97,11 @@ def week_tasks(request):
         })
 
     except Exception as e:
-        print(f"Error in week_tasks: {e}")
-        import traceback
-        print(traceback.format_exc())
         return JsonResponse({
             'success': False,
             'error': str(e)
         }, status=400)
+
 
 @csrf_exempt
 @require_POST

@@ -11,7 +11,10 @@ class DailyPlannerApp {
     }
 
     init() {
-        this.updateDisplay();
+        // Сначала создаем дни недели
+        this.weekManager.updateWeekInfo();
+        // Затем загружаем и показываем задачи
+        this.loadAndDisplayWeek();
     }
 
     setupEventListeners() {
@@ -30,32 +33,30 @@ class DailyPlannerApp {
 
     async prevWeek() {
         this.weekManager.currentWeekOffset--;
-        await this.updateDisplay();
+        await this.loadAndDisplayWeek();
     }
 
     async nextWeek() {
         this.weekManager.currentWeekOffset++;
-        await this.updateDisplay();
+        await this.loadAndDisplayWeek();
     }
 
     async goToCurrentWeek() {
         if (this.weekManager.currentWeekOffset !== 0) {
             this.weekManager.currentWeekOffset = 0;
-            await this.updateDisplay();
+            await this.loadAndDisplayWeek();
         }
     }
 
-    async updateDisplay() {
-        const currentWeekDates = this.weekManager.getCurrentWeekDates();
+    async loadAndDisplayWeek() {
+        // Обновляем отображение дней недели
         this.weekManager.updateWeekInfo();
 
-        // Загружаем задачи с кэшированием
-        const tasks = await this.weekManager.loadWeekWithNeighbors(
-            this.weekManager.currentWeekOffset
-        );
+        // Загружаем задачи для текущей недели
+        const tasks = await this.weekManager.loadWeekTasks(this.weekManager.currentWeekOffset);
 
-        this.taskManager.displayTasksForWeek(tasks, currentWeekDates);
-        console.log('Displayed tasks:', tasks);
+        // Показываем задачи
+        this.taskManager.displayTasksForWeek(tasks, this.weekManager.getCurrentWeekDates());
     }
 }
 
