@@ -5,7 +5,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0;
+    flex: 0 0 auto;
 }
 
 .header h1 {

@@ -8,143 +8,141 @@
 {% endblock %}
 
 {% block content %}
-    <div class="planner-grid">
-        <div class="week-container">
-            <div class="week-header">
-                <div class="week-navigation">
-                    <div id="week-nav-left">
-                        <button id="prev-week" class="nav-button">←</button>
-                        <button id="current-week" class="nav-button styled-button">Сегодня</button>
+    <div class="week-container">
+        <div class="week-header">
+            <div class="week-navigation">
+                <div id="week-nav-left">
+                    <button id="prev-week" class="nav-button">←</button>
+                    <button id="current-week" class="nav-button styled-button">Сегодня</button>
+                </div>
+                <h2>Неделя: <span id="week-range"><!-- Даты будут обновляться через JS --></span></h2>
+                <button id="next-week" class="nav-button">→</button>
+            </div>
+
+            <div class="week-stats">
+                <span class="points">0 баллов</span>
+            </div>
+        </div>
+
+        <div class="week-content">
+            <div class="days-column" id="days-container">
+                <div class="day-card">
+                    <div class="day-header">
+                        <h3>Понедельник</h3>
+                        <div>
+                            <span class="date" data-date-format>дд.мм</span>
+                            <span class="points">0 / 0 задач</span>
+                            <button class="add-task-btn" data-task-type="day">+</button>
+                        </div>
                     </div>
-                    <h2>Неделя: <span id="week-range"><!-- Даты будут обновляться через JS --></span></h2>
-                    <button id="next-week" class="nav-button">→</button>
+                    <ul class="task-list"></ul>
                 </div>
 
-                <div class="week-stats">
-                    <span class="points">0 баллов</span>
+                <div class="day-card">
+                    <div class="day-header">
+                        <h3>Вторник</h3>
+                        <div>
+                            <span class="date" data-date-format>дд.мм</span>
+                            <span class="points">0 / 0 задач</span>
+                            <button class="add-task-btn" data-task-type="day">+</button>
+                        </div>
+                    </div>
+                    <ul class="task-list"></ul>
+                </div>
+
+                <div class="day-card">
+                    <div class="day-header">
+                        <h3>Среда</h3>
+                        <div>
+                            <span class="date" data-date-format>дд.мм</span>
+                            <span class="points">0 / 0 задач</span>
+                            <button class="add-task-btn" data-task-type="day">+</button>
+                        </div>
+                    </div>
+                    <ul class="task-list"></ul>
+                </div>
+
+                <div class="day-card">
+                    <div class="day-header">
+                        <h3>Четверг</h3>
+                        <div>
+                            <span class="date" data-date-format>дд.мм</span>
+                            <span class="points">0 / 0 задач</span>
+                            <button class="add-task-btn" data-task-type="day">+</button>
+                        </div>
+                    </div>
+                    <ul class="task-list"></ul>
+                </div>
+
+                <div class="day-card">
+                    <div class="day-header">
+                        <h3>Пятница</h3>
+                        <div>
+                            <span class="date" data-date-format>дд.мм</span>
+                            <span class="points">0 / 0 задач</span>
+                            <button class="add-task-btn" data-task-type="day">+</button>
+                        </div>
+                    </div>
+                    <ul class="task-list"></ul>
+                </div>
+
+                <div class="day-card">
+                    <div class="day-header">
+                        <h3>Суббота</h3>
+                        <div>
+                            <span class="date" data-date-format>дд.мм</span>
+                            <span class="points">0 / 0 задач</span>
+                            <button class="add-task-btn" data-task-type="day">+</button>
+                        </div>
+                    </div>
+                    <ul class="task-list"></ul>
+                </div>
+
+                <div class="day-card">
+                    <div class="day-header">
+                        <h3>Воскресенье</h3>
+                        <div>
+                            <span class="date" data-date-format>дд.мм</span>
+                            <span class="points">0 / 0 задач</span>
+                            <button class="add-task-btn" data-task-type="day">+</button>
+                        </div>
+                    </div>
+                    <ul class="task-list"></ul>
                 </div>
             </div>
 
-            <div class="week-content">
-                <div class="days-column" id="days-container">
-                    <div class="day-card">
-                        <div class="day-header">
-                            <h3>Понедельник</h3>
-                            <div>
-                                <span class="date" data-date-format>дд.мм</span>
-                                <span class="points">0 / 0 задач</span>
-                                <button class="add-task-btn" data-task-type="day">+</button>
-                            </div>
-                        </div>
-                        <ul class="task-list"></ul>
+            <div class="misc-column">
+                <!-- Секция недельных задач -->
+                <div class="misc-section">
+                    <div class="section-header">
+                        <h3>Задачи недели</h3>
+                        <button class="add-task-btn"
+                                id="add-weekly-task-btn"
+                                data-task-type="week">+
+                        </button>
                     </div>
 
-                    <div class="day-card">
-                        <div class="day-header">
-                            <h3>Вторник</h3>
-                            <div>
-                                <span class="date" data-date-format>дд.мм</span>
-                                <span class="points">0 / 0 задач</span>
-                                <button class="add-task-btn" data-task-type="day">+</button>
-                            </div>
-                        </div>
-                        <ul class="task-list"></ul>
-                    </div>
+                    <ul class="weekly-task-list" id="weekly-tasks-list">
+                        <!-- Недельные задачи через JS -->
+                    </ul>
+                </div>
 
-                    <div class="day-card">
-                        <div class="day-header">
-                            <h3>Среда</h3>
-                            <div>
-                                <span class="date" data-date-format>дд.мм</span>
-                                <span class="points">0 / 0 задач</span>
-                                <button class="add-task-btn" data-task-type="day">+</button>
-                            </div>
-                        </div>
-                        <ul class="task-list"></ul>
+                <!-- Остальные секции без изменений -->
+                <div class="misc-section">
+                    <div class="section-header">
+                        <h3>Секция 2</h3>
                     </div>
-
-                    <div class="day-card">
-                        <div class="day-header">
-                            <h3>Четверг</h3>
-                            <div>
-                                <span class="date" data-date-format>дд.мм</span>
-                                <span class="points">0 / 0 задач</span>
-                                <button class="add-task-btn" data-task-type="day">+</button>
-                            </div>
-                        </div>
-                        <ul class="task-list"></ul>
-                    </div>
-
-                    <div class="day-card">
-                        <div class="day-header">
-                            <h3>Пятница</h3>
-                            <div>
-                                <span class="date" data-date-format>дд.мм</span>
-                                <span class="points">0 / 0 задач</span>
-                                <button class="add-task-btn" data-task-type="day">+</button>
-                            </div>
-                        </div>
-                        <ul class="task-list"></ul>
-                    </div>
-
-                    <div class="day-card">
-                        <div class="day-header">
-                            <h3>Суббота</h3>
-                            <div>
-                                <span class="date" data-date-format>дд.мм</span>
-                                <span class="points">0 / 0 задач</span>
-                                <button class="add-task-btn" data-task-type="day">+</button>
-                            </div>
-                        </div>
-                        <ul class="task-list"></ul>
-                    </div>
-
-                    <div class="day-card">
-                        <div class="day-header">
-                            <h3>Воскресенье</h3>
-                            <div>
-                                <span class="date" data-date-format>дд.мм</span>
-                                <span class="points">0 / 0 задач</span>
-                                <button class="add-task-btn" data-task-type="day">+</button>
-                            </div>
-                        </div>
-                        <ul class="task-list"></ul>
+                    <div class="section-content">
+                        <p>Содержимое второй секции</p>
                     </div>
                 </div>
 
-                <div class="misc-column">
-                    <!-- Секция недельных задач -->
-                    <div class="misc-section">
-                        <div class="section-header">
-                            <h3>Задачи недели</h3>
-                            <button class="add-task-btn"
-                                    id="add-weekly-task-btn"
-                                    data-task-type="week">+
-                            </button>
-                        </div>
-
-                        <ul class="weekly-task-list" id="weekly-tasks-list">
-                            <!-- Недельные задачи через JS -->
-                        </ul>
+                <div class="misc-section">
+                    <div class="section-header">
+                        <h3>Секция 3</h3>
                     </div>
-
-                    <!-- Остальные секции без изменений -->
-                    <div class="misc-section">
-                        <div class="section-header">
-                            <h3>Секция 2</h3>
-                        </div>
-                        <div class="section-content">
-                            <p>Содержимое второй секции</p>
-                        </div>
-                    </div>
-
-                    <div class="misc-section">
-                        <div class="section-header">
-                            <h3>Секция 3</h3>
-                        </div>
-                        <div class="section-content">
-                            <p>Содержимое третьей секции</p>
-                        </div>
+                    <div class="section-content">
+                        <p>Содержимое третьей секции</p>
                     </div>
                 </div>
             </div>
