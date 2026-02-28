@@ -30,7 +30,6 @@
 
 #week-range {
     display: inline-block;
-    min-width: 250px;
     text-align: center;
     font-weight: 500;
     color: var(--text-secondary);

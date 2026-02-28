@@ -61,6 +61,8 @@ class WeekView(LoginRequiredMixin, TemplateView):
         context['week_start'] = start_date
         context['week_end'] = start_date + timedelta(days=6)
         context['today_date'] = today
+        # TODO
+        context['week_number'] = 1
         return context
 
 
