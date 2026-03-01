@@ -16,7 +16,7 @@ from django.views.generic import CreateView
 from django.views.generic import TemplateView
 
 from .forms import CustomRegisterForm
-from .models import Task
+from .models import Task, UserProfile
 
 logger = logging.getLogger(__name__)
 
@@ -58,11 +58,23 @@ class WeekView(LoginRequiredMixin, TemplateView):
         today = timezone.now().date()
         start_date = today - timedelta(days=today.weekday())
 
+        # Получаем или создаем профиль пользователя
+        profile, created = UserProfile.objects.get_or_create(
+            user=self.request.user,
+            defaults={
+                'start_week_date': start_date,
+                'start_week_number': 1
+            }
+        )
+
+        # Вычисляем номер текущей недели
+        week_number = profile.get_current_week_number(start_date)
+
         context['week_start'] = start_date
         context['week_end'] = start_date + timedelta(days=6)
         context['today_date'] = today
         # TODO
-        context['week_number'] = 1
+        # context['week_number'] = week_number
         return context
 
 
@@ -74,6 +86,14 @@ def week_tasks(request):
         today = timezone.now().date()
         start_date = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
         end_date = start_date + timedelta(days=6)
+
+        print(f"Loading tasks for week {week_offset}: {start_date} to {end_date}")
+
+        # Получаем профиль пользователя
+        profile = request.user.profile
+
+        # Вычисляем номер недели для запрашиваемого понедельника
+        week_number = profile.get_current_week_number(start_date)
 
         tasks = Task.objects.filter(
             user=request.user,
@@ -91,10 +111,13 @@ def week_tasks(request):
                 'is_weekly': task.is_weekly
             })
 
+        print(f"Returning {len(tasks_data)} total tasks")
+
         return JsonResponse({
             'success': True,
             'week_start': start_date.isoformat(),
             'week_end': end_date.isoformat(),
+            'week_number': week_number,
             'tasks': tasks_data
         })
 

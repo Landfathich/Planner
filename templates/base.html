@@ -34,7 +34,7 @@
 
     <footer class="footer">
         {% if user.is_authenticated %}
-            <p>Неделя #{{ week_number }}</p>
+            <p>Неделя <span class="week-number">#{{ week_number }}</span></p>
         {% endif %}
     </footer>
 

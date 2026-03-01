@@ -47,6 +47,13 @@ export class WeekManager {
         }
     }
 
+    updateWeekNumber(weekNumber) {
+        const weekNumberElement = document.querySelector('.week-number');
+        if (weekNumberElement) {
+            weekNumberElement.textContent = `#${weekNumber}`;
+        }
+    }
+
     updateDayCards(dates) {
         const dayCards = document.querySelectorAll('.day-card');
 
@@ -82,6 +89,10 @@ export class WeekManager {
             const response = await fetch(`/api/tasks/week/?week_offset=${offset}`);
             if (response.ok) {
                 const data = await response.json();
+
+                // Обновляем номер недели в DOM
+                this.updateWeekNumber(data.week_number);
+
                 return data.tasks || [];
             }
             return [];
