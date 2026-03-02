@@ -82,15 +82,46 @@ export class TaskManager {
 
     async updateTask() {
         const taskData = this.getFormData();
+        const oldState = this.getTaskOldState(taskData.id);
 
         try {
             const updatedTask = await this.sendTaskUpdate(taskData);
-            this.updateTaskInDOM(updatedTask);
+
+            if (this.hasPositionChanged(oldState, updatedTask)) {
+                await this.refreshWeekDisplay();
+            } else {
+                this.updateTaskInDOM(updatedTask);
+            }
+
             this.closeModalAndUpdateStats('task-detail-modal');
             showNotification('Задача обновлена!', 'success');
         } catch (error) {
             this.handleError('Error updating task:', error, 'Ошибка обновления задачи');
         }
+    }
+
+    getTaskOldState(taskId) {
+        const element = document.querySelector(`.task[data-task-id="${taskId}"]`);
+        if (!element) return null;
+
+        return {
+            date: element.closest('.day-card')?.querySelector('.add-task-btn')?.dataset.date,
+            isWeekly: element.classList.contains('weekly-task')
+        };
+    }
+
+    hasPositionChanged(oldState, updatedTask) {
+        if (!oldState) return true;
+
+        const dateChanged = oldState.date && oldState.date !== updatedTask.date;
+        const typeChanged = oldState.isWeekly !== updatedTask.is_weekly;
+
+        return dateChanged || typeChanged;
+    }
+
+    async refreshWeekDisplay() {
+        const tasks = await this.weekManager.loadWeekTasks(this.weekManager.currentWeekOffset);
+        this.displayTasksForWeek(tasks, this.weekManager.getCurrentWeekDates());
     }
 
     getFormData() {

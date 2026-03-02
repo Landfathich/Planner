@@ -178,7 +178,6 @@
             <form id="task-edit-form">
                 <input type="hidden" id="edit-task-id" name="id">
                 <input type="hidden" id="edit-task-type" name="task_type">
-                <input type="hidden" id="edit-task-date" name="date">
 
                 <div class="form-group">
                     <label for="edit-task-title">Название:</label>
@@ -188,6 +187,11 @@
                 <div class="form-group">
                     <label for="edit-task-description">Описание:</label>
                     <textarea id="edit-task-description" name="description"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-task-date">Дата:</label>
+                    <input type="date" id="edit-task-date" name="date" required>
                 </div>
 
                 <div class="form-group">

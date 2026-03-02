@@ -214,13 +214,15 @@ def update_task(request, task_id):
         task.description = data.get('description', task.description)
         task.is_done = data.get('is_done', task.is_done)
         task.is_weekly = data.get('is_weekly', task.is_weekly)
+        task.date = data.get('date', task.date)
+
         task.save()
 
         return JsonResponse({
             'id': task.id,
             'title': task.title,
             'description': task.description,
-            'date': task.date.isoformat(),
+            'date': task.date,
             'is_done': task.is_done,
             'is_weekly': task.is_weekly
         })
@@ -228,6 +230,7 @@ def update_task(request, task_id):
     except Task.DoesNotExist:
         return JsonResponse({'error': 'Задача не найдена'}, status=404)
     except Exception as e:
+        print(f"Error in update_task: {e}")
         return JsonResponse({'error': str(e)}, status=400)
 
 
