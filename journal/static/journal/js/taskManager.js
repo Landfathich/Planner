@@ -30,7 +30,7 @@ export class TaskManager {
         });
 
         // Разрешаем сброс на целевых зонах
-        const dropZones = document.querySelectorAll('.day-card, .weekly-task-list');
+        const dropZones = document.querySelectorAll('.day-card, .weekly-tasks-section');
         dropZones.forEach(zone => {
             zone.addEventListener('dragover', (e) => e.preventDefault());
             zone.addEventListener('drop', (e) => this.handleDrop(e, zone));
@@ -38,13 +38,13 @@ export class TaskManager {
 
         // Также добавим обработчики на динамически добавляемые зоны через делегирование
         document.addEventListener('dragover', (e) => {
-            if (e.target.closest('.day-card') || e.target.closest('.weekly-task-list')) {
+            if (e.target.closest('.day-card') || e.target.closest('.weekly-tasks-section')) {
                 e.preventDefault();
             }
         });
 
         document.addEventListener('drop', (e) => {
-            const zone = e.target.closest('.day-card') || e.target.closest('.weekly-task-list');
+            const zone = e.target.closest('.day-card') || e.target.closest('.weekly-tasks-section');
             if (zone) {
                 e.preventDefault();
                 this.handleDrop(e, zone);
@@ -57,7 +57,7 @@ export class TaskManager {
         if (!this.draggedTask) return;
 
         const taskId = this.draggedTask.dataset.taskId;
-        const isWeeklyZone = zone.classList.contains('weekly-task-list');
+        const isWeeklyZone = zone.classList.contains('weekly-tasks-section');
 
         // Определяем новую дату и тип задачи
         let newDate, newIsWeekly;

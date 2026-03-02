@@ -114,8 +114,9 @@ li {
 .task {
     box-sizing: inherit;
     padding: 10px;
-    flex-grow: 0;
+    flex-grow: 1;
     border-radius: 4px;
+    height: min-content;
     background: var(--light);
     border: 1px solid transparent;
     border-left: 3px solid var(--success);
@@ -353,15 +354,6 @@ li {
     font-size: 1.1rem;
 }
 
-.weekly-task-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    min-height: 0;
-    flex: 1;
-    overflow-y: auto;
-}
-
 .weekly-task {
     border-left: 3px solid var(--second-primary);
 }
@@ -394,7 +386,7 @@ li {
     cursor: grabbing;
 }
 
-.day-card.drag-over, .weekly-task-list.drag-over {
+.day-card.drag-over, .task-list.drag-over {
     background-color: rgba(136, 192, 208, 0.1);
     border: 2px dashed var(--primary);
 }
@@ -416,7 +408,6 @@ li {
         flex-wrap: wrap;
     }
 
-    .weekly-tasks-section,
     .misc-section {
         flex: 1 1 300px;
         min-height: 200px;
