@@ -105,7 +105,6 @@ li {
     font-size: 16px;
     line-height: 24px;
     cursor: pointer;
-    margin-left: 10px;
 }
 
 .add-task-btn:hover {
@@ -115,7 +114,7 @@ li {
 .task {
     box-sizing: inherit;
     padding: 10px;
-    flex-grow: 1;
+    flex-grow: 0;
     border-radius: 4px;
     background: var(--light);
     border: 1px solid transparent;
@@ -323,6 +322,8 @@ li {
 }
 
 .misc-section {
+    display: flex;
+    flex-direction: column;
     background: var(--card-bg);
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -356,7 +357,8 @@ li {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    max-height: calc(100% - 40px);
+    min-height: 0;
+    flex: 1;
     overflow-y: auto;
 }
 
@@ -372,6 +374,10 @@ li {
     color: var(--text-secondary);
     font-style: italic;
     text-align: center;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 1rem;
 }
 
