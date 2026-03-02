@@ -5,6 +5,7 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'journal/css/week.css' %}">
+    <link rel="stylesheet" href="{% static 'journal/css/habit_tracker.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -127,15 +128,8 @@
                     </ul>
                 </div>
 
-                <!-- Остальные секции без изменений -->
-                <div class="misc-section">
-                    <div class="section-header">
-                        <h3>Секция 2</h3>
-                    </div>
-                    <div class="section-content">
-                        <p>Содержимое второй секции</p>
-                    </div>
-                </div>
+                <!-- Трекер привычек -->
+                {% include "journal/habit_tracker.html" %}
 
                 <div class="misc-section">
                     <div class="section-header">

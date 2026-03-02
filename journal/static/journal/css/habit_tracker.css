@@ -1,0 +1,219 @@
+.habits-tracker {
+    font-size: 14px;
+    margin-top: 10px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.habits-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--text-secondary);
+    width: 100%;
+}
+
+.habit-name-col {
+    flex: 2;
+    min-width: 100px;
+    padding-left: 8px;
+}
+
+.habit-days-header {
+    display: flex;
+    gap: 4px;
+    flex: 3;
+    justify-content: space-around;
+    padding: 0 10px;
+}
+
+.habit-day {
+    width: 28px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.habit-actions-col {
+    width: 60px;
+    text-align: center;
+}
+
+.habits-list {
+    max-height: 300px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+.habit-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+.habit-row:hover {
+    background-color: var(--light);
+}
+
+.habit-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    word-break: break-word;
+    padding-right: 10px;
+}
+
+.habit-days {
+    display: flex;
+    gap: 4px;
+    flex: 3;
+    justify-content: space-around;
+    padding: 0 10px;
+}
+
+.habit-day-check {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Кастомные чекбоксы с 4 состояниями */
+.habit-checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    user-select: none;
+}
+
+.habit-checkbox:hover {
+    transform: scale(1.1);
+    border-color: var(--primary);
+}
+
+.habit-checkbox[data-state="empty"] {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+.habit-checkbox[data-state="empty"]::after {
+    content: "";
+}
+
+.habit-checkbox[data-state="checked"] {
+    background-color: var(--success);
+    border-color: var(--success);
+    color: white;
+}
+
+.habit-checkbox[data-state="checked"]::after {
+    content: "✓";
+}
+
+.habit-checkbox[data-state="crossed"] {
+    background-color: var(--danger);
+    border-color: var(--danger);
+    color: white;
+}
+
+.habit-checkbox[data-state="crossed"]::after {
+    content: "✗";
+}
+
+.habit-checkbox[data-state="circled"] {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+}
+
+.habit-checkbox[data-state="circled"]::after {
+    content: "○";
+}
+
+.habit-edit, .habit-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+}
+
+.habit-edit:hover {
+    background-color: var(--primary);
+    color: var(--text-primary);
+}
+
+.habit-delete:hover {
+    background-color: var(--danger);
+    color: var(--text-primary);
+}
+
+.add-habit-btn {
+    background: var(--primary);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.add-habit-btn:hover {
+    background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+    .habit-name-col {
+        min-width: 80px;
+        font-size: 12px;
+    }
+
+    .habit-days-header, .habit-days {
+        padding: 0 5px;
+    }
+
+    .habit-day, .habit-day-check {
+        width: 24px;
+    }
+
+    .habit-checkbox {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+    }
+
+    .habit-actions-col {
+        width: 50px;
+    }
+
+    .habit-edit, .habit-delete {
+        padding: 4px;
+    }
+}

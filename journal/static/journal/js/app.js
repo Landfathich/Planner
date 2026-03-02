@@ -1,10 +1,12 @@
 import {WeekManager} from './weekManager.js';
 import {TaskManager} from './taskManager.js';
+import {HabitTracker} from "./habitTracker.js";
 
 class DailyPlannerApp {
     constructor() {
         this.weekManager = new WeekManager();
         this.taskManager = new TaskManager(this.weekManager);
+        this.habitTracker = new HabitTracker();
 
         this.setupEventListeners();
         this.init();

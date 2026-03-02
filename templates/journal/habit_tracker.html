@@ -1,0 +1,97 @@
+{% load static %}
+
+<div class="misc-section">
+    <div class="section-header">
+        <h3>Трекер привычек</h3>
+        <button class="add-habit-btn">+</button>
+    </div>
+    <div class="section-content">
+        <div class="habits-tracker">
+            <!-- Заголовок с днями недели -->
+            <div class="habits-header">
+                <div class="habit-name-col">Привычка</div>
+                <div class="habit-days-header">
+                    <span class="habit-day">Пн</span>
+                    <span class="habit-day">Вт</span>
+                    <span class="habit-day">Ср</span>
+                    <span class="habit-day">Чт</span>
+                    <span class="habit-day">Пт</span>
+                    <span class="habit-day">Сб</span>
+                    <span class="habit-day">Вс</span>
+                </div>
+                <div class="habit-actions-col"></div>
+            </div>
+
+            <!-- Список привычек -->
+            <div class="habits-list">
+                <!-- Пример одной привычки -->
+                <div class="habit-row">
+                    <div class="habit-name-col">
+                        <span class="habit-name">Зарядка</span>
+                    </div>
+                    <div class="habit-days">
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="empty"></div>
+                        </div>
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="empty"></div>
+                        </div>
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="checked"></div>
+                        </div>
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="empty"></div>
+                        </div>
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="empty"></div>
+                        </div>
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="empty"></div>
+                        </div>
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="empty"></div>
+                        </div>
+                    </div>
+                    <div class="habit-actions-col">
+                        <button class="habit-edit" title="Редактировать">✎</button>
+                        <button class="habit-delete" title="Удалить">×</button>
+                    </div>
+                </div>
+
+                <!-- Ещё одна привычка для примера -->
+                <div class="habit-row">
+                    <div class="habit-name-col">
+                        <span class="habit-name">Медитация</span>
+                    </div>
+                    <div class="habit-days">
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="empty"></div>
+                        </div>
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="empty"></div>
+                        </div>
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="empty"></div>
+                        </div>
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="checked"></div>
+                        </div>
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="checked"></div>
+                        </div>
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="empty"></div>
+                        </div>
+                        <div class="habit-day-check">
+                            <div class="habit-checkbox" data-state="empty"></div>
+                        </div>
+                    </div>
+                    <div class="habit-actions-col">
+                        <button class="habit-edit" title="Редактировать">✎</button>
+                        <button class="habit-delete" title="Удалить">×</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
