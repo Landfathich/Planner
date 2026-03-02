@@ -383,6 +383,16 @@ li {
     color: var(--text-secondary);
 }
 
+.task.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.day-card.drag-over, .weekly-task-list.drag-over {
+    background-color: rgba(136, 192, 208, 0.1);
+    border: 2px dashed var(--primary);
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
     .week-content {

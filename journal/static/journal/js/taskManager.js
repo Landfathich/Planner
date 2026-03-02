@@ -3,8 +3,117 @@ import {showNotification} from "./utils.js";
 export class TaskManager {
     constructor(weekManager) {
         this.weekManager = weekManager;
+        this.draggedTask = null;
         this.setupModalListeners();
         this.setupTaskListeners();
+        this.setupDragAndDrop();
+    }
+
+    setupDragAndDrop() {
+        // Обработчик начала перетаскивания (делегирование, т.к. задачи динамические)
+        document.addEventListener('dragstart', (e) => {
+            const taskElement = e.target.closest('.task');
+            if (!taskElement) return;
+
+            this.draggedTask = taskElement;
+            taskElement.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', taskElement.dataset.taskId);
+            e.dataTransfer.effectAllowed = 'move';
+        });
+
+        document.addEventListener('dragend', (e) => {
+            const taskElement = e.target.closest('.task');
+            if (taskElement) {
+                taskElement.classList.remove('dragging');
+            }
+            this.draggedTask = null;
+        });
+
+        // Разрешаем сброс на целевых зонах
+        const dropZones = document.querySelectorAll('.day-card, .weekly-task-list');
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => e.preventDefault());
+            zone.addEventListener('drop', (e) => this.handleDrop(e, zone));
+        });
+
+        // Также добавим обработчики на динамически добавляемые зоны через делегирование
+        document.addEventListener('dragover', (e) => {
+            if (e.target.closest('.day-card') || e.target.closest('.weekly-task-list')) {
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('drop', (e) => {
+            const zone = e.target.closest('.day-card') || e.target.closest('.weekly-task-list');
+            if (zone) {
+                e.preventDefault();
+                this.handleDrop(e, zone);
+            }
+        });
+    }
+
+    handleDrop(e, zone) {
+        e.preventDefault();
+        if (!this.draggedTask) return;
+
+        const taskId = this.draggedTask.dataset.taskId;
+        const isWeeklyZone = zone.classList.contains('weekly-task-list');
+
+        // Определяем новую дату и тип задачи
+        let newDate, newIsWeekly;
+
+        if (isWeeklyZone) {
+            // Сброс в блок недельных задач: задача становится недельной, дата = понедельник текущей недели
+            const monday = this.weekManager.getCurrentWeekDates()[0];
+            newDate = monday.toISOString().split('T')[0];
+            newIsWeekly = true;
+        } else {
+            // Сброс на день: задача становится дневной, дата = дата дня
+            const dayCard = zone.closest('.day-card');
+            const dateButton = dayCard.querySelector('.add-task-btn');
+            if (!dateButton) return;
+            newDate = dateButton.dataset.date;
+            newIsWeekly = false;
+        }
+
+        // Вызываем обновление задачи (переиспользуем sendTaskUpdate)
+        this.moveTask(taskId, newDate, newIsWeekly);
+    }
+
+    async moveTask(taskId, newDate, newIsWeekly) {
+        // Получаем текущее состояние задачи из DOM для старой позиции
+        const oldState = this.getTaskOldState(taskId);
+
+        // Формируем данные для обновления (берём текущие title, description, is_done)
+        const taskElement = document.querySelector(`.task[data-task-id="${taskId}"]`);
+        const title = taskElement?.querySelector('.task-title')?.textContent || '';
+        const description = taskElement?.querySelector('.task-description')?.textContent || '';
+        const isDone = taskElement?.classList.contains('done') || false;
+
+        const taskData = {
+            id: taskId,
+            title: title,
+            description: description,
+            date: newDate,
+            is_done: isDone,
+            is_weekly: newIsWeekly
+        };
+
+        try {
+            const updatedTask = await this.sendTaskUpdate(taskData);
+
+            // Проверяем, изменилась ли позиция (используем ту же логику, что в updateTask)
+            if (this.hasPositionChanged(oldState, updatedTask)) {
+                await this.refreshWeekDisplay();
+            } else {
+                // Теоретически такого не должно быть при перетаскивании, но на всякий случай
+                this.updateTaskInDOM(updatedTask);
+            }
+
+            showNotification('Задача перемещена!', 'success');
+        } catch (error) {
+            this.handleError('Error moving task:', error, 'Ошибка перемещения задачи');
+        }
     }
 
     setupTaskListeners() {
@@ -351,6 +460,7 @@ export class TaskManager {
         const li = document.createElement('li');
         li.className = `task ${task.is_weekly ? 'weekly-task' : 'day-task'} ${task.is_done ? 'done' : ''}`;
         li.dataset.taskId = task.id;
+        li.draggable = true;
         li.innerHTML = `
             <div class="task-main">
                 <span class="task-title">${task.title}</span>
