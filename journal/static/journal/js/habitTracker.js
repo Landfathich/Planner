@@ -277,82 +277,86 @@ export class HabitTracker {
 
     // Открыть модальное окно (для создания или редактирования)
     async openHabitModal(habitId = null) {
-        const modal = document.getElementById('habit-modal');
-        const modalTitle = document.getElementById('habit-modal-title');
-        const deleteBtn = document.getElementById('delete-habit-btn');
-        const form = document.getElementById('habit-form');
+    const modal = document.getElementById('habit-modal');
+    const modalTitle = document.getElementById('habit-modal-title');
+    const deleteBtn = document.getElementById('delete-habit-btn');
+    const form = document.getElementById('habit-form');
 
-        // Сбрасываем форму
-        form.reset();
+    // Сбрасываем форму
+    form.reset();
+    document.getElementById('habit-end-date').value = '';
 
-        if (habitId) {
-            // Редактирование
-            modalTitle.textContent = 'Редактировать привычку';
-            deleteBtn.style.display = 'block';
+    if (habitId) {
+        // Редактирование
+        modalTitle.textContent = 'Редактировать привычку';
+        deleteBtn.style.display = 'block';
 
-            // Загружаем данные привычки
-            try {
-                const habit = this.habits.find(h => h.id == habitId);
-                if (habit) {
-                    document.getElementById('habit-id').value = habit.id;
-                    document.getElementById('habit-name').value = habit.name;
-                    document.getElementById('habit-description').value = habit.description || '';
-                    document.getElementById('habit-start-date').value = habit.start_date || '';
-                    this.currentHabitId = habit.id;
-                }
-            } catch (error) {
-                console.error('Error loading habit:', error);
+        // Загружаем данные привычки
+        try {
+            const habit = this.habits.find(h => h.id == habitId);
+            if (habit) {
+                document.getElementById('habit-id').value = habit.id;
+                document.getElementById('habit-name').value = habit.name;
+                document.getElementById('habit-description').value = habit.description || '';
+                document.getElementById('habit-start-date').value = habit.start_date || '';
+                document.getElementById('habit-end-date').value = habit.end_date || '';
+                this.currentHabitId = habit.id;
             }
-        } else {
-            // Создание
-            modalTitle.textContent = 'Добавить привычку';
-            deleteBtn.style.display = 'none';
-            document.getElementById('habit-id').value = '';
-
-            // Устанавливаем сегодняшнюю дату как дату начала
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('habit-start-date').value = today;
-
-            this.currentHabitId = null;
+        } catch (error) {
+            console.error('Error loading habit:', error);
         }
+    } else {
+        // Создание - ИСПРАВЛЯЕМ ДАТУ НАЧАЛА
+        modalTitle.textContent = 'Добавить привычку';
+        deleteBtn.style.display = 'none';
+        document.getElementById('habit-id').value = '';
 
-        modal.style.display = 'flex';
+        // Используем дату понедельника текущей отображаемой недели, а не сегодня
+        const weekDates = this.weekManager.getCurrentWeekDates();
+        const mondayDate = weekDates[0].toISOString().split('T')[0];
+        document.getElementById('habit-start-date').value = mondayDate;
+
+        this.currentHabitId = null;
     }
+
+    modal.style.display = 'flex';
+}
 
     // Сохранить привычку
     async saveHabit() {
-        const habitId = document.getElementById('habit-id').value;
-        const isEditing = !!habitId;
+    const habitId = document.getElementById('habit-id').value;
+    const isEditing = !!habitId;
 
-        const habitData = {
-            name: document.getElementById('habit-name').value,
-            description: document.getElementById('habit-description').value,
-            start_date: document.getElementById('habit-start-date').value
-        };
+    const habitData = {
+        name: document.getElementById('habit-name').value,
+        description: document.getElementById('habit-description').value,
+        start_date: document.getElementById('habit-start-date').value,
+        end_date: document.getElementById('habit-end-date').value || null  // Если пусто - отправляем null
+    };
 
-        const url = isEditing ? `/api/habits/${habitId}/update/` : '/api/habits/create/';
+    const url = isEditing ? `/api/habits/${habitId}/update/` : '/api/habits/create/';
 
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': this.getCSRFToken()
-                },
-                body: JSON.stringify(habitData)
-            });
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.getCSRFToken()
+            },
+            body: JSON.stringify(habitData)
+        });
 
-            if (!response.ok) throw new Error('Failed to save habit');
+        if (!response.ok) throw new Error('Failed to save habit');
 
-            // Закрываем модалку и обновляем список
-            document.getElementById('habit-modal').style.display = 'none';
-            await this.loadAndDisplayHabits();
+        // Закрываем модалку и обновляем список
+        document.getElementById('habit-modal').style.display = 'none';
+        await this.loadAndDisplayHabits();
 
-        } catch (error) {
-            console.error('Error saving habit:', error);
-            alert('Ошибка при сохранении привычки');
-        }
+    } catch (error) {
+        console.error('Error saving habit:', error);
+        alert('Ошибка при сохранении привычки');
     }
+}
 
     // Подготовка к удалению
     prepareDeleteHabit(habitId, habitName) {

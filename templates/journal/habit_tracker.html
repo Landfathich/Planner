@@ -31,6 +31,7 @@
 </div>
 
 <!-- Модальное окно для создания/редактирования привычки -->
+<!-- Модальное окно для создания/редактирования привычки -->
 <div id="habit-modal" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close" id="close-habit-modal">&times;</span>
@@ -51,6 +52,12 @@
             <div class="form-group">
                 <label for="habit-start-date">Дата начала:</label>
                 <input type="date" id="habit-start-date" name="start_date" required>
+            </div>
+
+            <!-- ДОБАВЛЯЕМ ПОЛЕ ДЛЯ ДАТЫ ЗАВЕРШЕНИЯ -->
+            <div class="form-group">
+                <label for="habit-end-date">Дата завершения (оставьте пустым если активна):</label>
+                <input type="date" id="habit-end-date" name="end_date">
             </div>
 
             <div class="form-actions">

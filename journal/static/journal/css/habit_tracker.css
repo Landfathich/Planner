@@ -270,6 +270,206 @@
     color: var(--text-primary);
 }
 
+.habits-list {
+    max-height: 300px;
+    overflow-y: auto;  /* Включаем вертикальный скролл */
+    overflow-x: hidden; /* Отключаем горизонтальный скролл */
+    width: 100%;
+    scrollbar-width: thin; /* Для Firefox */
+    scrollbar-color: var(--primary) var(--card-bg); /* Для Firefox */
+}
+
+/* Стили для скроллбара в Chrome/Safari */
+.habits-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.habits-list::-webkit-scrollbar-track {
+    background: var(--card-bg);
+    border-radius: 4px;
+}
+
+.habits-list::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+.habits-list::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-hover);
+}
+
+/* Убеждаемся что строки привычек не выходят за пределы */
+.habit-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+    width: 100%;
+    min-width: 0; /* Важно для flex-детей */
+}
+
+.habit-name-col {
+    flex: 2;
+    min-width: 100px;
+    padding-left: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Добавляем многоточие для длинных названий */
+}
+
+.habit-days {
+    display: flex;
+    gap: 4px;
+    flex: 3;
+    justify-content: space-around;
+    padding: 0 10px;
+    flex-shrink: 0; /* Запрещаем сжиматься */
+}
+
+/* Секция с трекером привычек */
+.misc-section {
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    max-height: none;
+}
+
+.section-content {
+    width: 100%;
+    overflow: hidden;
+    flex: 1;
+}
+
+.habits-tracker {
+    font-size: 14px;
+    margin-top: 10px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.habits-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--text-secondary);
+    width: 100%;
+    flex-shrink: 0; /* Заголовок не сжимается */
+}
+
+.habit-name-col {
+    flex: 2;
+    min-width: 100px;
+    padding-left: 8px;
+}
+
+.habit-days-header {
+    display: flex;
+    gap: 4px;
+    flex: 3;
+    justify-content: space-around;
+    padding: 0 10px;
+}
+
+.habit-day {
+    width: 28px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.habit-actions-col {
+    width: 60px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.habits-list {
+    max-height: 250px; /* Фиксированная максимальная высота */
+    overflow-y: auto;   /* Вертикальный скролл */
+    overflow-x: hidden;
+    width: 100%;
+    flex: 1; /* Растягивается */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) var(--card-bg);
+    min-height: 0; /* Важно для flex-детей */
+}
+
+/* Стили для скроллбара */
+.habits-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.habits-list::-webkit-scrollbar-track {
+    background: var(--card-bg);
+    border-radius: 4px;
+}
+
+.habits-list::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+.habits-list::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-hover);
+}
+
+.habit-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+    width: 100%;
+    min-width: 0;
+}
+
+.habit-row:hover {
+    background-color: var(--light);
+}
+
+.habit-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    word-break: break-word;
+    padding-right: 10px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.habit-days {
+    display: flex;
+    gap: 4px;
+    flex: 3;
+    justify-content: space-around;
+    padding: 0 10px;
+    flex-shrink: 0;
+}
+
+.habit-day-check {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Остальные стили остаются без изменений */
+
 @media (max-width: 768px) {
     .habit-name-col {
         min-width: 80px;

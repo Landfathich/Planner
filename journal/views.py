@@ -303,6 +303,8 @@ def create_habit(request):
             user=request.user,
             name=data['name'],
             description=data.get('description', ''),
+            start_date=data.get('start_date', timezone.now().date()),
+            end_date=data.get('end_date'),  # Может быть None
             order=data.get('order', 0)
         )
 
@@ -310,6 +312,8 @@ def create_habit(request):
             'id': habit.id,
             'name': habit.name,
             'description': habit.description,
+            'start_date': habit.start_date,
+            'end_date': habit.end_date,
             'order': habit.order
         })
     except Exception as e:
