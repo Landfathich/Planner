@@ -53,3 +53,42 @@ class Task(models.Model):
 
     class Meta:
         ordering = ['date', 'created_at']
+
+class Habit(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='habits')
+    name = models.CharField(max_length=200, verbose_name="Название привычки")
+    description = models.TextField(blank=True, null=True, verbose_name="Описание")
+    order = models.IntegerField(default=0, verbose_name="Порядок")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order', 'created_at']
+        verbose_name = "Привычка"
+        verbose_name_plural = "Привычки"
+
+    def __str__(self):
+        return self.name
+
+
+class HabitEntry(models.Model):
+    STATUS_CHOICES = [
+        ('empty', 'Пусто'),
+        ('checked', '✓'),
+        ('crossed', '✗'),
+        ('circled', '○'),
+    ]
+
+    habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name='entries')
+    date = models.DateField(verbose_name="Дата")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='empty', verbose_name="Статус")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['habit', 'date']  # одна запись на привычку в день
+        ordering = ['date']
+        verbose_name = "Запись привычки"
+        verbose_name_plural = "Записи привычек"
+
+    def __str__(self):
+        return f"{self.habit.name} - {self.date} - {self.get_status_display()}"

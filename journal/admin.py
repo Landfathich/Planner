@@ -32,3 +32,17 @@ class TaskAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+from .models import Habit, HabitEntry
+
+@admin.register(Habit)
+class HabitAdmin(admin.ModelAdmin):
+    list_display = ['name', 'user', 'order', 'created_at']
+    list_filter = ['user']
+    search_fields = ['name', 'description']
+
+@admin.register(HabitEntry)
+class HabitEntryAdmin(admin.ModelAdmin):
+    list_display = ['habit', 'date', 'status']
+    list_filter = ['status', 'date']
+    search_fields = ['habit__name']

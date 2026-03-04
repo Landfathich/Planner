@@ -1,36 +1,26 @@
 import {WeekManager} from './weekManager.js';
 import {TaskManager} from './taskManager.js';
-import {HabitTracker} from "./habitTracker.js";
+import {HabitTracker} from './habitTracker.js';
 
 class DailyPlannerApp {
     constructor() {
         this.weekManager = new WeekManager();
         this.taskManager = new TaskManager(this.weekManager);
-        this.habitTracker = new HabitTracker();
+        this.habitTracker = new HabitTracker(this.weekManager);
 
         this.setupEventListeners();
         this.init();
     }
 
     init() {
-        // Сначала создаем дни недели
         this.weekManager.updateWeekInfo();
-        // Затем загружаем и показываем задачи
         this.loadAndDisplayWeek();
     }
 
     setupEventListeners() {
-        document.getElementById('prev-week').addEventListener('click', () => {
-            this.prevWeek();
-        });
-
-        document.getElementById('next-week').addEventListener('click', () => {
-            this.nextWeek();
-        });
-
-        document.getElementById('current-week').addEventListener('click', () => {
-            this.goToCurrentWeek();
-        });
+        document.getElementById('prev-week').addEventListener('click', () => this.prevWeek());
+        document.getElementById('next-week').addEventListener('click', () => this.nextWeek());
+        document.getElementById('current-week').addEventListener('click', () => this.goToCurrentWeek());
     }
 
     async prevWeek() {
@@ -51,14 +41,14 @@ class DailyPlannerApp {
     }
 
     async loadAndDisplayWeek() {
-        // Обновляем отображение дней недели
         this.weekManager.updateWeekInfo();
 
-        // Загружаем задачи для текущей недели
+        // Загружаем задачи
         const tasks = await this.weekManager.loadWeekTasks(this.weekManager.currentWeekOffset);
-
-        // Показываем задачи
         this.taskManager.displayTasksForWeek(tasks, this.weekManager.getCurrentWeekDates());
+
+        // Загружаем привычки
+        await this.habitTracker.updateForWeek();
     }
 }
 

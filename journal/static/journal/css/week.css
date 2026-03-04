@@ -36,6 +36,7 @@ li {
     padding: 1rem;
     padding-left: 15px;
     transition: transform 0.2s;
+    flex-grow: 1;
 }
 
 .day-card:hover {

@@ -95,6 +95,7 @@ def week_tasks(request):
         # Вычисляем номер недели для запрашиваемого понедельника
         week_number = profile.get_current_week_number(start_date)
 
+        # Задачи
         tasks = Task.objects.filter(
             user=request.user,
             date__range=[start_date, end_date]
@@ -111,17 +112,43 @@ def week_tasks(request):
                 'is_weekly': task.is_weekly
             })
 
-        print(f"Returning {len(tasks_data)} total tasks")
+        # Привычки пользователя
+        habits = Habit.objects.filter(user=request.user)
+
+        habits_data = []
+        for habit in habits:
+            # Получаем записи для этой недели
+            entries = HabitEntry.objects.filter(
+                habit=habit,
+                date__range=[start_date, end_date]
+            )
+
+            # Создаем словарь статусов по датам
+            entries_dict = {}
+            for entry in entries:
+                entries_dict[entry.date.isoformat()] = entry.status
+
+            habits_data.append({
+                'id': habit.id,
+                'name': habit.name,
+                'description': habit.description,
+                'order': habit.order,
+                'entries': entries_dict  # {'2026-03-02': 'checked', ...}
+            })
+
+        print(f"Returning {len(tasks_data)} tasks and {len(habits_data)} habits")
 
         return JsonResponse({
             'success': True,
             'week_start': start_date.isoformat(),
             'week_end': end_date.isoformat(),
             'week_number': week_number,
-            'tasks': tasks_data
+            'tasks': tasks_data,
+            'habits': habits_data  # Добавили привычки
         })
 
     except Exception as e:
+        print(f"Error in week_tasks: {e}")
         return JsonResponse({
             'success': False,
             'error': str(e)
@@ -248,5 +275,109 @@ def delete_task(request, task_id):
 
     except Task.DoesNotExist:
         return JsonResponse({'error': 'Задача не найдена'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+from .models import Habit, HabitEntry
+
+
+@login_required
+def create_habit(request):
+    """Создание новой привычки"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+
+        habit = Habit.objects.create(
+            user=request.user,
+            name=data['name'],
+            description=data.get('description', ''),
+            order=data.get('order', 0)
+        )
+
+        return JsonResponse({
+            'id': habit.id,
+            'name': habit.name,
+            'description': habit.description,
+            'order': habit.order
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+def update_habit(request, habit_id):
+    """Обновление привычки"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    try:
+        habit = Habit.objects.get(id=habit_id, user=request.user)
+        data = json.loads(request.body)
+
+        habit.name = data.get('name', habit.name)
+        habit.description = data.get('description', habit.description)
+        habit.order = data.get('order', habit.order)
+        habit.save()
+
+        return JsonResponse({
+            'id': habit.id,
+            'name': habit.name,
+            'description': habit.description,
+            'order': habit.order
+        })
+    except Habit.DoesNotExist:
+        return JsonResponse({'error': 'Habit not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+def delete_habit(request, habit_id):
+    """Удаление привычки"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    try:
+        habit = Habit.objects.get(id=habit_id, user=request.user)
+        habit.delete()
+        return JsonResponse({'success': True})
+    except Habit.DoesNotExist:
+        return JsonResponse({'error': 'Habit not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+def update_habit_entry(request):
+    """Обновление статуса привычки на конкретную дату"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+
+        habit = Habit.objects.get(id=data['habit_id'], user=request.user)
+
+        entry, created = HabitEntry.objects.get_or_create(
+            habit=habit,
+            date=data['date'],
+            defaults={'status': data['status']}
+        )
+
+        if not created:
+            entry.status = data['status']
+            entry.save()
+
+        return JsonResponse({
+            'habit_id': habit.id,
+            'date': entry.date.isoformat(),
+            'status': entry.status
+        })
+    except Habit.DoesNotExist:
+        return JsonResponse({'error': 'Habit not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
