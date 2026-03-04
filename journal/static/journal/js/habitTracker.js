@@ -76,90 +76,96 @@ export class HabitTracker {
         // Кнопки действий
         const actionsCol = document.createElement('div');
         actionsCol.className = 'habit-actions-col';
+
+        // Проверяем, завершена ли привычка
+        const isCompleted = habit.end_date && new Date(habit.end_date) <= new Date();
+
         actionsCol.innerHTML = `
-            <button class="habit-edit" title="Редактировать">✎</button>
-            <button class="habit-delete" title="Удалить">×</button>
-        `;
+        <button class="habit-edit" title="Редактировать">✎</button>
+        ${!isCompleted ? '<button class="habit-complete" title="Завершить привычку">✓</button>' : ''}
+        <button class="habit-delete" title="Удалить">×</button>
+    `;
+
         row.appendChild(actionsCol);
 
         return row;
     }
 
     setupHabitCheckboxes() {
-    document.addEventListener('click', (e) => {
-        const checkbox = e.target.closest('.habit-checkbox');
-        if (!checkbox) return;
+        document.addEventListener('click', (e) => {
+            const checkbox = e.target.closest('.habit-checkbox');
+            if (!checkbox) return;
 
-        e.preventDefault();
-        e.stopPropagation();
+            e.preventDefault();
+            e.stopPropagation();
 
-        // Убеждаемся что data-state существует
-        if (!checkbox.dataset.state) {
-            checkbox.dataset.state = 'empty';
-        }
+            // Убеждаемся что data-state существует
+            if (!checkbox.dataset.state) {
+                checkbox.dataset.state = 'empty';
+            }
 
-        const states = ['empty', 'checked', 'crossed', 'circled'];
-        const currentState = checkbox.dataset.state;
-        const currentIndex = states.indexOf(currentState);
-        const nextIndex = (currentIndex + 1) % states.length;
-        const nextState = states[nextIndex];
+            const states = ['empty', 'checked', 'crossed', 'circled'];
+            const currentState = checkbox.dataset.state;
+            const currentIndex = states.indexOf(currentState);
+            const nextIndex = (currentIndex + 1) % states.length;
+            const nextState = states[nextIndex];
 
-        checkbox.dataset.state = nextState;
-        this.saveHabitEntry(checkbox, nextState);
+            checkbox.dataset.state = nextState;
+            this.saveHabitEntry(checkbox, nextState);
 
-        return false;
-    });
-}
+            return false;
+        });
+    }
 
     async saveHabitEntry(checkbox, status) {
-    const habitRow = checkbox.closest('.habit-row');
-    if (!habitRow) {
-        console.error('No habit row found');
-        return;
-    }
-
-    const habitId = habitRow.dataset.habitId;
-    const date = checkbox.dataset.date;
-
-    console.log('Saving habit entry:', {habitId, date, status, habitRow, checkbox});
-
-    if (!habitId || !date) {
-        console.error('Missing habitId or date:', {habitId, date});
-        return;
-    }
-
-    try {
-        const response = await fetch('/api/habits/entry/update/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': this.getCSRFToken()
-            },
-            body: JSON.stringify({
-                habit_id: parseInt(habitId),
-                date: date,
-                status: status
-            })
-        });
-
-        const responseData = await response.json();
-        console.log('Server response:', responseData);
-
-        if (!response.ok) {
-            console.error('Server error:', responseData);
-            throw new Error('Failed to save habit entry');
+        const habitRow = checkbox.closest('.habit-row');
+        if (!habitRow) {
+            console.error('No habit row found');
+            return;
         }
 
-        console.log('Habit entry saved successfully:', {habitId, date, status});
-    } catch (error) {
-        console.error('Error saving habit entry:', error);
-        // В случае ошибки возвращаем предыдущее состояние
-        const states = ['empty', 'checked', 'crossed', 'circled'];
-        const prevIndex = (states.indexOf(status) - 1 + states.length) % states.length;
-        const prevState = states[prevIndex];
-        checkbox.dataset.state = prevState;
+        const habitId = habitRow.dataset.habitId;
+        const date = checkbox.dataset.date;
+
+        console.log('Saving habit entry:', {habitId, date, status, habitRow, checkbox});
+
+        if (!habitId || !date) {
+            console.error('Missing habitId or date:', {habitId, date});
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/habits/entry/update/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify({
+                    habit_id: parseInt(habitId),
+                    date: date,
+                    status: status
+                })
+            });
+
+            const responseData = await response.json();
+            console.log('Server response:', responseData);
+
+            if (!response.ok) {
+                console.error('Server error:', responseData);
+                throw new Error('Failed to save habit entry');
+            }
+
+            console.log('Habit entry saved successfully:', {habitId, date, status});
+        } catch (error) {
+            console.error('Error saving habit entry:', error);
+            // В случае ошибки возвращаем предыдущее состояние
+            const states = ['empty', 'checked', 'crossed', 'circled'];
+            const prevIndex = (states.indexOf(status) - 1 + states.length) % states.length;
+            const prevState = states[prevIndex];
+            checkbox.dataset.state = prevState;
+        }
     }
-}
 
     // Настройка обработчиков для модального окна
     setupHabitModalListeners() {
@@ -181,6 +187,16 @@ export class HabitTracker {
                 const habitId = habitRow.dataset.habitId;
                 const habitName = habitRow.querySelector('.habit-name').textContent;
                 this.prepareDeleteHabit(habitId, habitName);
+            }
+        });
+
+        // Обработчик для кнопки завершения
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('habit-complete')) {
+                const habitRow = e.target.closest('.habit-row');
+                const habitId = habitRow.dataset.habitId;
+                const habitName = habitRow.querySelector('.habit-name').textContent;
+                this.completeHabit(habitId, habitName);
             }
         });
 
@@ -216,6 +232,47 @@ export class HabitTracker {
             if (e.target === habitModal) habitModal.style.display = 'none';
             if (e.target === deleteModal) deleteModal.style.display = 'none';
         });
+    }
+
+    async completeHabit(habitId, habitName) {
+        if (!confirm(`Завершить привычку "${habitName}"? Она пропадёт на этой неделе и больше не будет показываться в будущих неделях.`)) {
+            return;
+        }
+
+        try {
+            // Устанавливаем end_date на сегодня
+            const today = new Date().toISOString().split('T')[0];
+
+            // Получаем текущие данные привычки
+            const habit = this.habits.find(h => h.id == habitId);
+
+            const response = await fetch(`/api/habits/${habitId}/update/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify({
+                    name: habit.name,
+                    description: habit.description || '',
+                    start_date: habit.start_date,
+                    end_date: today  // Добавляем дату завершения
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to complete habit');
+            }
+
+            // Обновляем список привычек
+            await this.loadAndDisplayHabits();
+            console.log('Habit completed successfully');
+
+        } catch (error) {
+            console.error('Error completing habit:', error);
+            alert('Ошибка при завершении привычки');
+        }
     }
 
     // Открыть модальное окно (для создания или редактирования)

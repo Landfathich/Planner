@@ -227,6 +227,49 @@
     margin-top: 20px;
 }
 
+.habit-complete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+}
+
+.habit-complete:hover {
+    background-color: var(--success);
+    color: var(--text-primary);
+}
+
+/* Обновляем существующие стили для кнопок */
+.habit-edit, .habit-delete, .habit-complete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+}
+
+.habit-edit:hover {
+    background-color: var(--primary);
+    color: var(--text-primary);
+}
+
+.habit-delete:hover {
+    background-color: var(--danger);
+    color: var(--text-primary);
+}
+
+.habit-complete:hover {
+    background-color: var(--success);
+    color: var(--text-primary);
+}
+
 @media (max-width: 768px) {
     .habit-name-col {
         min-width: 80px;

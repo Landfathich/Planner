@@ -329,17 +329,28 @@ def update_habit(request, habit_id):
         habit.name = data.get('name', habit.name)
         habit.description = data.get('description', habit.description)
         habit.order = data.get('order', habit.order)
+
+        # Добавляем обработку дат
+        if 'start_date' in data:
+            habit.start_date = data['start_date']
+        if 'end_date' in data:
+            habit.end_date = data['end_date']
+
         habit.save()
 
+        # ВОЗВРАЩАЕМ ДАТЫ КАК СТРОКИ, БЕЗ isoformat()
         return JsonResponse({
             'id': habit.id,
             'name': habit.name,
             'description': habit.description,
-            'order': habit.order
+            'order': habit.order,
+            'start_date': habit.start_date,  # Просто строка
+            'end_date': habit.end_date if habit.end_date else None  # Просто строка или None
         })
     except Habit.DoesNotExist:
         return JsonResponse({'error': 'Habit not found'}, status=404)
     except Exception as e:
+        print(f"Error in update_habit: {e}")
         return JsonResponse({'error': str(e)}, status=400)
 
 
