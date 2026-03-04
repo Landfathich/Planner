@@ -29,3 +29,46 @@
         </div>
     </div>
 </div>
+
+<!-- Модальное окно для создания/редактирования привычки -->
+<div id="habit-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" id="close-habit-modal">&times;</span>
+        <h3 class="modal-title" id="habit-modal-title">Добавить привычку</h3>
+        <form id="habit-form">
+            <input type="hidden" id="habit-id" name="id">
+
+            <div class="form-group">
+                <label for="habit-name">Название привычки:</label>
+                <input type="text" id="habit-name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="habit-description">Описание (необязательно):</label>
+                <textarea id="habit-description" name="description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="habit-start-date">Дата начала:</label>
+                <input type="date" id="habit-start-date" name="start_date" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="danger-button" id="delete-habit-btn" style="display: none;">Удалить</button>
+                <button type="submit" class="styled-button">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления -->
+<div id="delete-habit-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>Подтверждение удаления</h3>
+        <p>Вы уверены, что хотите удалить эту привычку?</p>
+        <div class="form-actions">
+            <button type="button" class="nav-button" id="cancel-habit-delete">Отмена</button>
+            <button type="button" class="danger-button" id="confirm-habit-delete">Удалить</button>
+        </div>
+    </div>
+</div>

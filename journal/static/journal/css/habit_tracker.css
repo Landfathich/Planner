@@ -189,6 +189,44 @@
     background: var(--primary-hover);
 }
 
+/* Стили для модального окна привычек */
+#habit-modal .modal-content {
+    max-width: 400px;
+}
+
+#habit-modal .form-group {
+    margin-bottom: 15px;
+}
+
+#habit-modal label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-secondary);
+}
+
+#habit-modal input[type="text"],
+#habit-modal input[type="date"],
+#habit-modal textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    box-sizing: border-box;
+}
+
+#habit-modal textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+#habit-modal .form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
 @media (max-width: 768px) {
     .habit-name-col {
         min-width: 80px;

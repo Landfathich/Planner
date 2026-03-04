@@ -367,6 +367,7 @@ def update_habit_entry(request):
 
     try:
         data = json.loads(request.body)
+        print(f"Received data: {data}")
 
         habit = Habit.objects.get(id=data['habit_id'], user=request.user)
 
@@ -380,12 +381,14 @@ def update_habit_entry(request):
             entry.status = data['status']
             entry.save()
 
+        # ВОЗВРАЩАЕМ ДАТУ КАК СТРОКУ, БЕЗ isoformat()
         return JsonResponse({
             'habit_id': habit.id,
-            'date': entry.date.isoformat(),
+            'date': data['date'],  # Просто возвращаем ту же строку, что пришла
             'status': entry.status
         })
     except Habit.DoesNotExist:
         return JsonResponse({'error': 'Habit not found'}, status=404)
     except Exception as e:
+        print(f"Error in update_habit_entry: {e}")
         return JsonResponse({'error': str(e)}, status=400)
