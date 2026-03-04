@@ -112,11 +112,15 @@ def week_tasks(request):
                 'is_weekly': task.is_weekly
             })
 
-        # Привычки пользователя
-        habits = Habit.objects.filter(user=request.user)
+        # Получаем ВСЕ привычки пользователя
+        all_habits = Habit.objects.filter(user=request.user)
 
         habits_data = []
-        for habit in habits:
+        for habit in all_habits:
+            # Проверяем, активна ли привычка для этой недели
+            if not habit.is_active_for_week(start_date):
+                continue  # Пропускаем неактивные привычки
+
             # Получаем записи для этой недели
             entries = HabitEntry.objects.filter(
                 habit=habit,
@@ -133,10 +137,12 @@ def week_tasks(request):
                 'name': habit.name,
                 'description': habit.description,
                 'order': habit.order,
+                'start_date': habit.start_date.isoformat() if habit.start_date else None,
+                'end_date': habit.end_date.isoformat() if habit.end_date else None,
                 'entries': entries_dict  # {'2026-03-02': 'checked', ...}
             })
 
-        print(f"Returning {len(tasks_data)} tasks and {len(habits_data)} habits")
+        print(f"Returning {len(tasks_data)} tasks and {len(habits_data)} active habits")
 
         return JsonResponse({
             'success': True,
@@ -144,11 +150,13 @@ def week_tasks(request):
             'week_end': end_date.isoformat(),
             'week_number': week_number,
             'tasks': tasks_data,
-            'habits': habits_data  # Добавили привычки
+            'habits': habits_data
         })
 
     except Exception as e:
         print(f"Error in week_tasks: {e}")
+        import traceback
+        print(traceback.format_exc())
         return JsonResponse({
             'success': False,
             'error': str(e)

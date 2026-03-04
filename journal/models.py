@@ -54,10 +54,13 @@ class Task(models.Model):
     class Meta:
         ordering = ['date', 'created_at']
 
+
 class Habit(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='habits')
     name = models.CharField(max_length=200, verbose_name="Название привычки")
     description = models.TextField(blank=True, null=True, verbose_name="Описание")
+    start_date = models.DateField(default=timezone.now, verbose_name="Дата начала")
+    end_date = models.DateField(null=True, blank=True, verbose_name="Дата завершения")
     order = models.IntegerField(default=0, verbose_name="Порядок")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -69,6 +72,20 @@ class Habit(models.Model):
 
     def __str__(self):
         return self.name
+
+    def is_active_for_week(self, week_start):
+        """Проверяет, активна ли привычка для указанной недели"""
+        week_end = week_start + timedelta(days=6)
+
+        # Если есть end_date и неделя полностью после окончания
+        if self.end_date and week_start > self.end_date:
+            return False
+
+        # Если неделя полностью до начала
+        if week_end < self.start_date:
+            return False
+
+        return True
 
 
 class HabitEntry(models.Model):
