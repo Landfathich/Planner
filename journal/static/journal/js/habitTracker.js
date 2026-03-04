@@ -23,7 +23,7 @@ export class HabitTracker {
 
     // Отрисовка привычек
     renderHabits(habits, weekDates) {
-        const habitsList = document.querySelector('.habits-list');
+        const habitsList = document.querySelector('.habit-list');
         if (!habitsList) return;
 
         habitsList.innerHTML = '';
@@ -45,51 +45,59 @@ export class HabitTracker {
         });
     }
 
-    // Создание строки привычки
     createHabitRow(habit, weekDates) {
-        const row = document.createElement('div');
-        row.className = 'habit-row';
-        row.dataset.habitId = habit.id;
+    const row = document.createElement('div');
+    row.className = 'habit-row';
+    row.dataset.habitId = habit.id;
 
-        // Название привычки
-        const nameCol = document.createElement('div');
-        nameCol.className = 'habit-name-col';
-        nameCol.innerHTML = `<span class="habit-name">${habit.name}</span>`;
-        row.appendChild(nameCol);
+    // Название привычки
+    const nameCol = document.createElement('div');
+    nameCol.className = 'habit-name-col';
+    nameCol.innerHTML = `<span class="habit-name">${habit.name}</span>`;
+    row.appendChild(nameCol);
 
-        // Дни недели с чекбоксами
-        const daysCol = document.createElement('div');
-        daysCol.className = 'habit-days';
+    // Дни недели
+    const daysCol = document.createElement('div');
+    daysCol.className = 'habit-days';
 
-        weekDates.forEach(date => {
-            const dateStr = date.toISOString().split('T')[0];
-            const status = habit.entries?.[dateStr] || 'empty';
+    weekDates.forEach(date => {
+        const dateStr = date.toISOString().split('T')[0];
+        const status = habit.entries?.[dateStr] || 'empty';
 
-            const dayCell = document.createElement('div');
-            dayCell.className = 'habit-day-check';
-            dayCell.innerHTML = `<div class="habit-checkbox" data-state="${status}" data-date="${dateStr}"></div>`;
-            daysCol.appendChild(dayCell);
-        });
+        const dayCell = document.createElement('div');
+        dayCell.className = 'habit-day-check';
+        dayCell.innerHTML = `<div class="habit-checkbox" data-state="${status}" data-date="${dateStr}"></div>`;
+        daysCol.appendChild(dayCell);
+    });
 
-        row.appendChild(daysCol);
+    row.appendChild(daysCol);
 
-        // Кнопки действий
-        const actionsCol = document.createElement('div');
-        actionsCol.className = 'habit-actions-col';
+    // Кнопки действий
+    const actionsCol = document.createElement('div');
+    actionsCol.className = 'habit-actions';
 
-        // Проверяем, завершена ли привычка
-        const isCompleted = habit.end_date && new Date(habit.end_date) <= new Date();
+    const isCompleted = habit.end_date && new Date(habit.end_date) <= new Date();
 
+    if (isCompleted) {
+        // Если привычка завершена - кнопка возобновления на втором месте
         actionsCol.innerHTML = `
-        <button class="habit-edit" title="Редактировать">✎</button>
-        ${!isCompleted ? '<button class="habit-complete" title="Завершить привычку">✓</button>' : ''}
-        <button class="habit-delete" title="Удалить">×</button>
-    `;
-
-        row.appendChild(actionsCol);
-
-        return row;
+            <button class="habit-edit" title="Редактировать">✎</button>
+            <button class="habit-resume" title="Возобновить привычку">↻</button>
+            <button class="habit-delete" title="Удалить">×</button>
+        `;
+    } else {
+        // Если активна - кнопка завершения на втором месте
+        actionsCol.innerHTML = `
+            <button class="habit-edit" title="Редактировать">✎</button>
+            <button class="habit-complete" title="Завершить привычку">✓</button>
+            <button class="habit-delete" title="Удалить">×</button>
+        `;
     }
+
+    row.appendChild(actionsCol);
+
+    return row;
+}
 
     setupHabitCheckboxes() {
         document.addEventListener('click', (e) => {
@@ -170,7 +178,7 @@ export class HabitTracker {
     // Настройка обработчиков для модального окна
     setupHabitModalListeners() {
         // Кнопка добавления привычки
-        document.querySelector('.add-habit-btn').addEventListener('click', () => {
+        document.querySelector('.habit-add-btn').addEventListener('click', () => {
             this.openHabitModal();
         });
 
@@ -189,6 +197,16 @@ export class HabitTracker {
                 this.prepareDeleteHabit(habitId, habitName);
             }
         });
+
+        // Обработчик для кнопки возобновления
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('habit-resume')) {
+            const habitRow = e.target.closest('.habit-row');
+            const habitId = habitRow.dataset.habitId;
+            const habitName = habitRow.querySelector('.habit-name').textContent;
+            this.resumeHabit(habitId, habitName);
+        }
+    });
 
         // Обработчик для кнопки завершения
         document.addEventListener('click', (e) => {
@@ -234,6 +252,44 @@ export class HabitTracker {
         });
     }
 
+    async resumeHabit(habitId, habitName) {
+    if (!confirm(`Возобновить привычку "${habitName}"? Она снова будет показываться в будущих неделях.`)) {
+        return;
+    }
+
+    try {
+        // Получаем текущие данные привычки
+        const habit = this.habits.find(h => h.id == habitId);
+
+        const response = await fetch(`/api/habits/${habitId}/update/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.getCSRFToken()
+            },
+            body: JSON.stringify({
+                name: habit.name,
+                description: habit.description || '',
+                start_date: habit.start_date,
+                end_date: null  // Убираем дату завершения
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to resume habit');
+        }
+
+        // Обновляем список привычек
+        await this.loadAndDisplayHabits();
+        console.log('Habit resumed successfully');
+
+    } catch (error) {
+        console.error('Error resuming habit:', error);
+        alert('Ошибка при возобновлении привычки');
+    }
+}
+
     async completeHabit(habitId, habitName) {
         if (!confirm(`Завершить привычку "${habitName}"? Она пропадёт на этой неделе и больше не будет показываться в будущих неделях.`)) {
             return;
@@ -277,86 +333,86 @@ export class HabitTracker {
 
     // Открыть модальное окно (для создания или редактирования)
     async openHabitModal(habitId = null) {
-    const modal = document.getElementById('habit-modal');
-    const modalTitle = document.getElementById('habit-modal-title');
-    const deleteBtn = document.getElementById('delete-habit-btn');
-    const form = document.getElementById('habit-form');
+        const modal = document.getElementById('habit-modal');
+        const modalTitle = document.getElementById('habit-modal-title');
+        const deleteBtn = document.getElementById('delete-habit-btn');
+        const form = document.getElementById('habit-form');
 
-    // Сбрасываем форму
-    form.reset();
-    document.getElementById('habit-end-date').value = '';
+        // Сбрасываем форму
+        form.reset();
+        document.getElementById('habit-end-date').value = '';
 
-    if (habitId) {
-        // Редактирование
-        modalTitle.textContent = 'Редактировать привычку';
-        deleteBtn.style.display = 'block';
+        if (habitId) {
+            // Редактирование
+            modalTitle.textContent = 'Редактировать привычку';
+            deleteBtn.style.display = 'block';
 
-        // Загружаем данные привычки
-        try {
-            const habit = this.habits.find(h => h.id == habitId);
-            if (habit) {
-                document.getElementById('habit-id').value = habit.id;
-                document.getElementById('habit-name').value = habit.name;
-                document.getElementById('habit-description').value = habit.description || '';
-                document.getElementById('habit-start-date').value = habit.start_date || '';
-                document.getElementById('habit-end-date').value = habit.end_date || '';
-                this.currentHabitId = habit.id;
+            // Загружаем данные привычки
+            try {
+                const habit = this.habits.find(h => h.id == habitId);
+                if (habit) {
+                    document.getElementById('habit-id').value = habit.id;
+                    document.getElementById('habit-name').value = habit.name;
+                    document.getElementById('habit-description').value = habit.description || '';
+                    document.getElementById('habit-start-date').value = habit.start_date || '';
+                    document.getElementById('habit-end-date').value = habit.end_date || '';
+                    this.currentHabitId = habit.id;
+                }
+            } catch (error) {
+                console.error('Error loading habit:', error);
             }
-        } catch (error) {
-            console.error('Error loading habit:', error);
+        } else {
+            // Создание - ИСПРАВЛЯЕМ ДАТУ НАЧАЛА
+            modalTitle.textContent = 'Добавить привычку';
+            deleteBtn.style.display = 'none';
+            document.getElementById('habit-id').value = '';
+
+            // Используем дату понедельника текущей отображаемой недели, а не сегодня
+            const weekDates = this.weekManager.getCurrentWeekDates();
+            const mondayDate = weekDates[0].toISOString().split('T')[0];
+            document.getElementById('habit-start-date').value = mondayDate;
+
+            this.currentHabitId = null;
         }
-    } else {
-        // Создание - ИСПРАВЛЯЕМ ДАТУ НАЧАЛА
-        modalTitle.textContent = 'Добавить привычку';
-        deleteBtn.style.display = 'none';
-        document.getElementById('habit-id').value = '';
 
-        // Используем дату понедельника текущей отображаемой недели, а не сегодня
-        const weekDates = this.weekManager.getCurrentWeekDates();
-        const mondayDate = weekDates[0].toISOString().split('T')[0];
-        document.getElementById('habit-start-date').value = mondayDate;
-
-        this.currentHabitId = null;
+        modal.style.display = 'flex';
     }
-
-    modal.style.display = 'flex';
-}
 
     // Сохранить привычку
     async saveHabit() {
-    const habitId = document.getElementById('habit-id').value;
-    const isEditing = !!habitId;
+        const habitId = document.getElementById('habit-id').value;
+        const isEditing = !!habitId;
 
-    const habitData = {
-        name: document.getElementById('habit-name').value,
-        description: document.getElementById('habit-description').value,
-        start_date: document.getElementById('habit-start-date').value,
-        end_date: document.getElementById('habit-end-date').value || null  // Если пусто - отправляем null
-    };
+        const habitData = {
+            name: document.getElementById('habit-name').value,
+            description: document.getElementById('habit-description').value,
+            start_date: document.getElementById('habit-start-date').value,
+            end_date: document.getElementById('habit-end-date').value || null  // Если пусто - отправляем null
+        };
 
-    const url = isEditing ? `/api/habits/${habitId}/update/` : '/api/habits/create/';
+        const url = isEditing ? `/api/habits/${habitId}/update/` : '/api/habits/create/';
 
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': this.getCSRFToken()
-            },
-            body: JSON.stringify(habitData)
-        });
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify(habitData)
+            });
 
-        if (!response.ok) throw new Error('Failed to save habit');
+            if (!response.ok) throw new Error('Failed to save habit');
 
-        // Закрываем модалку и обновляем список
-        document.getElementById('habit-modal').style.display = 'none';
-        await this.loadAndDisplayHabits();
+            // Закрываем модалку и обновляем список
+            document.getElementById('habit-modal').style.display = 'none';
+            await this.loadAndDisplayHabits();
 
-    } catch (error) {
-        console.error('Error saving habit:', error);
-        alert('Ошибка при сохранении привычки');
+        } catch (error) {
+            console.error('Error saving habit:', error);
+            alert('Ошибка при сохранении привычки');
+        }
     }
-}
 
     // Подготовка к удалению
     prepareDeleteHabit(habitId, habitName) {

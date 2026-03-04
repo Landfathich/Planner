@@ -1,36 +1,24 @@
 {% load static %}
 
-<div class="misc-section">
-    <div class="section-header">
+<div class="habit-section">
+    <div class="habit-section-header">
         <h3>Трекер привычек</h3>
-        <button class="add-habit-btn">+</button>
-    </div>
-    <div class="section-content">
-        <div class="habits-tracker">
-            <!-- Заголовок с днями недели -->
-            <div class="habits-header">
-                <div class="habit-name-col">Привычка</div>
-                <div class="habit-days-header">
-                    <span class="habit-day">Пн</span>
-                    <span class="habit-day">Вт</span>
-                    <span class="habit-day">Ср</span>
-                    <span class="habit-day">Чт</span>
-                    <span class="habit-day">Пт</span>
-                    <span class="habit-day">Сб</span>
-                    <span class="habit-day">Вс</span>
-                </div>
-                <div class="habit-actions-col"></div>
-            </div>
-
-            <!-- Список привычек будет заполняться через JavaScript -->
-            <div class="habits-list">
-                <div class="no-habits">Загрузка привычек...</div>
-            </div>
+        <div class="habit-days-header">
+            <span class="habit-day">Пн</span>
+            <span class="habit-day">Вт</span>
+            <span class="habit-day">Ср</span>
+            <span class="habit-day">Чт</span>
+            <span class="habit-day">Пт</span>
+            <span class="habit-day">Сб</span>
+            <span class="habit-day">Вс</span>
         </div>
+        <button class="habit-add-btn">+</button>
+    </div>
+    <div class="habit-content">
+        <div class="habit-list"></div>
     </div>
 </div>
 
-<!-- Модальное окно для создания/редактирования привычки -->
 <!-- Модальное окно для создания/редактирования привычки -->
 <div id="habit-modal" class="modal" style="display: none;">
     <div class="modal-content">

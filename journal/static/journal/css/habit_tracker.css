@@ -1,54 +1,95 @@
-.habits-tracker {
-    font-size: 14px;
-    margin-top: 10px;
+/* Трекер привычек - уникальные классы */
+.habit-section {
+    width: 100%;
     background: var(--card-bg);
     border-radius: 8px;
     padding: 10px;
-    width: 100%;
     box-sizing: border-box;
 }
 
-.habits-header {
+.habit-section-header {
     display: flex;
     align-items: center;
-    padding: 8px 0;
+    padding: 0 0 8px 0;
     border-bottom: 2px solid var(--border-color);
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: var(--text-secondary);
-    width: 100%;
+    margin-bottom: 10px;
 }
 
-.habit-name-col {
-    flex: 2;
-    min-width: 100px;
-    padding-left: 8px;
+.habit-section-header h3 {
+    width: 120px; /* Фиксированная ширина для названия */
+    margin: 0;
+    font-size: 16px;
+    color: var(--text-primary);
+    flex-shrink: 0;
 }
 
 .habit-days-header {
+    flex: 1;
     display: flex;
-    gap: 4px;
-    flex: 3;
-    justify-content: space-around;
+    justify-content: space-between;
     padding: 0 10px;
+    gap: 4px;
 }
 
-.habit-day {
+.habit-days-header .habit-day {
     width: 28px;
     text-align: center;
     font-size: 12px;
     color: var(--text-secondary);
+    font-weight: normal;
+    flex-shrink: 0;
 }
 
-.habit-actions-col {
-    width: 60px;
-    text-align: center;
+.habit-add-btn {
+    width: 90px; /* Такая же ширина как у блока с кнопками действий */
+    background: var(--primary);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 4px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background-color 0.2s;
 }
 
-.habits-list {
+.habit-add-btn:hover {
+    background: var(--primary-hover);
+}
+
+.habit-content {
+    width: 100%;
+}
+
+.habit-list {
     max-height: 300px;
     overflow-y: auto;
-    width: 100%;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) var(--card-bg);
+    padding-right: 5px;
+}
+
+/* Стили для скроллбара */
+.habit-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.habit-list::-webkit-scrollbar-track {
+    background: var(--card-bg);
+    border-radius: 3px;
+}
+
+.habit-list::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+.habit-list::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-hover);
 }
 
 .habit-row {
@@ -57,37 +98,49 @@
     padding: 8px 0;
     border-bottom: 1px solid var(--border-color);
     transition: background-color 0.2s;
-    width: 100%;
 }
 
 .habit-row:hover {
     background-color: var(--light);
 }
 
+.habit-name-col {
+    width: 120px; /* Такая же как у заголовка h3 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 10px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
 .habit-name {
     font-weight: 500;
     color: var(--text-primary);
-    word-break: break-word;
-    padding-right: 10px;
+    font-size: 14px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .habit-days {
+    flex: 1;
     display: flex;
-    gap: 4px;
-    flex: 3;
-    justify-content: space-around;
+    justify-content: space-between;
     padding: 0 10px;
+    gap: 4px;
 }
 
 .habit-day-check {
     width: 28px;
-    height: 28px;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
 }
 
-/* Кастомные чекбоксы с 4 состояниями */
+/* Кастомные чекбоксы */
 .habit-checkbox {
     width: 24px;
     height: 24px;
@@ -149,106 +202,19 @@
     content: "○";
 }
 
-.habit-edit, .habit-delete {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: all 0.2s;
-    color: var(--text-secondary);
-}
-
-.habit-edit:hover {
-    background-color: var(--primary);
-    color: var(--text-primary);
-}
-
-.habit-delete:hover {
-    background-color: var(--danger);
-    color: var(--text-primary);
-}
-
-.add-habit-btn {
-    background: var(--primary);
-    color: var(--text-primary);
-    border: none;
-    border-radius: 4px;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    font-size: 16px;
+.habit-actions {
+    width: 90px; /* Такая же как у кнопки добавления */
     display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
+    justify-content: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
 }
 
-.add-habit-btn:hover {
-    background: var(--primary-hover);
-}
-
-/* Стили для модального окна привычек */
-#habit-modal .modal-content {
-    max-width: 400px;
-}
-
-#habit-modal .form-group {
-    margin-bottom: 15px;
-}
-
-#habit-modal label {
-    display: block;
-    margin-bottom: 5px;
-    color: var(--text-secondary);
-}
-
-#habit-modal input[type="text"],
-#habit-modal input[type="date"],
-#habit-modal textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--card-bg);
-    color: var(--text-primary);
-    box-sizing: border-box;
-}
-
-#habit-modal textarea {
-    min-height: 80px;
-    resize: vertical;
-}
-
-#habit-modal .form-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-.habit-complete {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: all 0.2s;
-    color: var(--text-secondary);
-}
-
-.habit-complete:hover {
-    background-color: var(--success);
-    color: var(--text-primary);
-}
-
-/* Обновляем существующие стили для кнопок */
 .habit-edit, .habit-delete, .habit-complete {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 4px 6px;
     border-radius: 4px;
     font-size: 14px;
     transition: all 0.2s;
@@ -270,217 +236,16 @@
     color: var(--text-primary);
 }
 
-.habits-list {
-    max-height: 300px;
-    overflow-y: auto;  /* Включаем вертикальный скролл */
-    overflow-x: hidden; /* Отключаем горизонтальный скролл */
-    width: 100%;
-    scrollbar-width: thin; /* Для Firefox */
-    scrollbar-color: var(--primary) var(--card-bg); /* Для Firefox */
-}
-
-/* Стили для скроллбара в Chrome/Safari */
-.habits-list::-webkit-scrollbar {
-    width: 8px;
-}
-
-.habits-list::-webkit-scrollbar-track {
-    background: var(--card-bg);
-    border-radius: 4px;
-}
-
-.habits-list::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 4px;
-}
-
-.habits-list::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-hover);
-}
-
-/* Убеждаемся что строки привычек не выходят за пределы */
-.habit-row {
-    display: flex;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border-color);
-    transition: background-color 0.2s;
-    width: 100%;
-    min-width: 0; /* Важно для flex-детей */
-}
-
-.habit-name-col {
-    flex: 2;
-    min-width: 100px;
-    padding-left: 8px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* Добавляем многоточие для длинных названий */
-}
-
-.habit-days {
-    display: flex;
-    gap: 4px;
-    flex: 3;
-    justify-content: space-around;
-    padding: 0 10px;
-    flex-shrink: 0; /* Запрещаем сжиматься */
-}
-
-/* Секция с трекером привычек */
-.misc-section {
-    margin-bottom: 20px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    height: auto;
-    max-height: none;
-}
-
-.section-content {
-    width: 100%;
-    overflow: hidden;
-    flex: 1;
-}
-
-.habits-tracker {
-    font-size: 14px;
-    margin-top: 10px;
-    background: var(--card-bg);
-    border-radius: 8px;
-    padding: 10px;
-    width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.habits-header {
-    display: flex;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 2px solid var(--border-color);
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: var(--text-secondary);
-    width: 100%;
-    flex-shrink: 0; /* Заголовок не сжимается */
-}
-
-.habit-name-col {
-    flex: 2;
-    min-width: 100px;
-    padding-left: 8px;
-}
-
-.habit-days-header {
-    display: flex;
-    gap: 4px;
-    flex: 3;
-    justify-content: space-around;
-    padding: 0 10px;
-}
-
-.habit-day {
-    width: 28px;
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-
-.habit-actions-col {
-    width: 60px;
-    text-align: center;
-    flex-shrink: 0;
-}
-
-.habits-list {
-    max-height: 250px; /* Фиксированная максимальная высота */
-    overflow-y: auto;   /* Вертикальный скролл */
-    overflow-x: hidden;
-    width: 100%;
-    flex: 1; /* Растягивается */
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary) var(--card-bg);
-    min-height: 0; /* Важно для flex-детей */
-}
-
-/* Стили для скроллбара */
-.habits-list::-webkit-scrollbar {
-    width: 8px;
-}
-
-.habits-list::-webkit-scrollbar-track {
-    background: var(--card-bg);
-    border-radius: 4px;
-}
-
-.habits-list::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 4px;
-}
-
-.habits-list::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-hover);
-}
-
-.habit-row {
-    display: flex;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border-color);
-    transition: background-color 0.2s;
-    width: 100%;
-    min-width: 0;
-}
-
-.habit-row:hover {
-    background-color: var(--light);
-}
-
-.habit-name {
-    font-weight: 500;
-    color: var(--text-primary);
-    word-break: break-word;
-    padding-right: 10px;
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.habit-days {
-    display: flex;
-    gap: 4px;
-    flex: 3;
-    justify-content: space-around;
-    padding: 0 10px;
-    flex-shrink: 0;
-}
-
-.habit-day-check {
-    width: 28px;
-    height: 28px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-/* Остальные стили остаются без изменений */
-
+/* Мобильная версия */
 @media (max-width: 768px) {
+    .habit-section-header h3,
     .habit-name-col {
-        min-width: 80px;
+        width: 80px;
         font-size: 12px;
     }
 
-    .habit-days-header, .habit-days {
-        padding: 0 5px;
-    }
-
-    .habit-day, .habit-day-check {
+    .habit-days-header .habit-day,
+    .habit-day-check {
         width: 24px;
     }
 
@@ -490,11 +255,65 @@
         font-size: 12px;
     }
 
-    .habit-actions-col {
-        width: 50px;
+    .habit-add-btn,
+    .habit-actions {
+        width: 70px;
     }
 
-    .habit-edit, .habit-delete {
+    .habit-edit, .habit-delete, .habit-complete {
         padding: 4px;
     }
+}
+
+.habit-resume {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+}
+
+.habit-resume:hover {
+    background-color: var(--primary);
+    color: var(--text-primary);
+}
+
+/* Обновляем группу кнопок */
+.habit-edit, .habit-delete, .habit-complete, .habit-resume {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+}
+
+.habit-edit:hover {
+    background-color: var(--primary);
+    color: var(--text-primary);
+}
+
+.habit-delete:hover {
+    background-color: var(--danger);
+    color: var(--text-primary);
+}
+
+.habit-complete:hover {
+    background-color: var(--success);
+    color: var(--text-primary);
+}
+
+.habit-resume:hover {
+    background-color: var(--accent-color);
+    color: var(--text-primary);
+}
+
+.no-habits {
+    padding: 15px;
+    text-align: center;
 }
