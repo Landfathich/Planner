@@ -317,10 +317,9 @@ li {
 .misc-column {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 16px;
+    height: 100%;
     width: 50%;
-    min-height: 0;
-    overflow-y: auto;
 }
 
 .misc-section {
@@ -390,6 +389,11 @@ li {
 .day-card.drag-over, .task-list.drag-over {
     background-color: rgba(136, 192, 208, 0.1);
     border: 2px dashed var(--primary);
+}
+
+.weekly-tasks-section {
+    flex: 1;
+    min-height: 180px;
 }
 
 /* Адаптивность */

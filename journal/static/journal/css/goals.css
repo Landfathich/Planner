@@ -1,55 +1,48 @@
-/* Стили для секции целей */
-.goals-section .section-tabs {
+.goals-section {
+    flex: 2;
+    min-height: 200px;
     display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 8px;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 12px;
+    box-sizing: border-box;
 }
 
-.goals-section .tab-btn {
-    background: none;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    color: var(--text-secondary);
-    font-size: 14px;
-    border-radius: 4px;
-    transition: all 0.2s;
+.goals-columns {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;  /* Важно для flex-детей */
+    overflow: hidden;
 }
 
-.goals-section .tab-btn:hover {
-    background-color: var(--light);
-    color: var(--text-primary);
+.goals-column {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;  /* Важно для flex-детей */
+    overflow: hidden;
 }
 
-.goals-section .tab-btn.active {
-    background-color: var(--primary);
-    color: var(--text-primary);
-}
-
-.goals-section .tab-content {
-    display: none;
-}
-
-.goals-section .tab-content.active {
-    display: block;
-}
-
-.goals-section .section-header {
+.column-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--border-color);
+    flex-shrink: 0;  /* Не даём сжиматься */
 }
 
-.goals-section .section-header h3 {
+.column-header h3 {
     margin: 0;
     font-size: 15px;
     color: var(--text-primary);
+    font-weight: 600;
 }
 
-.goals-section .add-goal-btn {
+.add-goal-btn {
     background: var(--primary);
     color: var(--text-primary);
     border: none;
@@ -64,187 +57,174 @@
     transition: background-color 0.2s;
 }
 
-.goals-section .add-goal-btn:hover {
+.add-goal-btn:hover {
     background: var(--primary-hover);
 }
 
-.goals-section .goals-list {
-    max-height: 250px;
-    overflow-y: auto;
-    overflow-x: hidden;
+/* Список целей */
+.goals-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;  /* Скролл работает */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 5px;
     scrollbar-width: thin;
-    scrollbar-color: var(--primary) var(--card-bg);
 }
 
-.goals-section .goals-list::-webkit-scrollbar {
-    width: 6px;
+.goals-list::-webkit-scrollbar {
+    width: 4px;
 }
 
-.goals-section .goals-list::-webkit-scrollbar-track {
+.goals-list::-webkit-scrollbar-track {
     background: var(--card-bg);
-    border-radius: 3px;
 }
 
-.goals-section .goals-list::-webkit-scrollbar-thumb {
+.goals-list::-webkit-scrollbar-thumb {
     background: var(--primary);
-    border-radius: 3px;
+    border-radius: 4px;
 }
 
-.goals-section .goal-item {
+/* Карточка цели */
+.goal-card {
+    flex-shrink: 0;  /* Не даём сжиматься */
+    background: var(--light);
+    border-radius: 6px;
+    padding: 10px 12px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.goal-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.goal-card.completed {
+    opacity: 0.7;
+    background: var(--light);
+}
+
+.goal-card.completed .goal-text {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}
+
+.goal-card.carried {
+    border-left-color: var(--accent-color);
+}
+
+/* Верхняя строка карточки */
+.goal-header {
     display: flex;
     align-items: center;
-    padding: 8px 5px;
-    border-bottom: 1px solid var(--border-color);
-    transition: background-color 0.2s;
+    gap: 8px;
+    margin-bottom: 6px;
 }
 
-.goals-section .goal-item:hover {
-    background-color: var(--light);
-}
-
-.goals-section .goal-item:last-child {
-    border-bottom: none;
-}
-
-.goals-section .goal-type-icon {
-    width: 24px;
-    text-align: center;
+.goal-type-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 14px;
     color: var(--text-secondary);
-    margin-right: 8px;
 }
 
-.goals-section .goal-text {
+.goal-text {
     flex: 1;
     color: var(--text-primary);
     font-size: 14px;
+    line-height: 1.4;
     word-break: break-word;
-    padding-right: 10px;
 }
 
-.goals-section .goal-actions {
+/* Действия с целью */
+.goal-actions {
     display: flex;
     gap: 4px;
-    flex-shrink: 0;
+    opacity: 0.5;
+    transition: opacity 0.2s;
 }
 
-.goals-section .goal-complete,
-.goals-section .goal-edit,
-.goals-section .goal-delete,
-.goals-section .goal-carry {
+.goal-card:hover .goal-actions {
+    opacity: 1;
+}
+
+.goal-complete,
+.goal-edit,
+.goal-delete,
+.goal-carry {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px 6px;
+    padding: 4px;
     border-radius: 4px;
     font-size: 14px;
     transition: all 0.2s;
     color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.goals-section .goal-complete:hover {
+.goal-complete:hover {
     background-color: var(--success);
     color: var(--text-primary);
 }
 
-.goals-section .goal-edit:hover {
+.goal-edit:hover {
     background-color: var(--primary);
     color: var(--text-primary);
 }
 
-.goals-section .goal-delete:hover {
+.goal-delete:hover {
     background-color: var(--danger);
     color: var(--text-primary);
 }
 
-.goals-section .goal-carry:hover {
+.goal-carry:hover {
     background-color: var(--accent-color);
     color: var(--text-primary);
 }
 
-.goals-section .goal-item.completed .goal-text {
-    text-decoration: line-through;
-    opacity: 0.6;
-}
-
-.goals-section .goal-item.carried {
-    border-left: 3px solid var(--accent-color);
-    padding-left: 7px;
-}
-
-.goals-section .goal-item .goal-carry {
-    font-size: 16px;
-}
-
-.goals-section .placeholder {
-    color: var(--text-secondary);
-    font-style: italic;
-    text-align: center;
-    padding: 15px;
-}
-
-/* Модальное окно для целей */
-#goal-modal .modal-content {
-    max-width: 450px;
-}
-
-#goal-modal .form-group {
-    margin-bottom: 15px;
-}
-
-#goal-modal label {
-    display: block;
-    margin-bottom: 5px;
-    color: var(--text-secondary);
-}
-
-#goal-modal textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--card-bg);
-    color: var(--text-primary);
-    box-sizing: border-box;
-    resize: vertical;
-    font-family: inherit;
-}
-
-#goal-modal .radio-group {
-    display: flex;
-    gap: 20px;
-    padding: 5px 0;
-}
-
-#goal-modal .radio-label {
+/* Мета-информация (для перенесенных целей) */
+.goal-meta {
     display: flex;
     align-items: center;
-    gap: 5px;
-    cursor: pointer;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text-secondary);
 }
 
-#goal-modal .radio-label input[type="radio"] {
-    width: auto;
-    margin: 0;
-    cursor: pointer;
+.carry-badge {
+    background: var(--accent-color);
+    color: var(--text-primary);
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 500;
 }
 
-#goal-modal .form-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+.placeholder {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 20px;
+    flex-shrink: 0;
 }
 
 /* Адаптация под мобильные */
 @media (max-width: 768px) {
-    .goals-section .goal-actions {
-        gap: 2px;
+    .goals-columns {
+        flex-direction: column;
+        gap: 20px;
     }
 
-    .goals-section .goal-complete,
-    .goals-section .goal-edit,
-    .goals-section .goal-delete,
-    .goals-section .goal-carry {
-        padding: 4px;
+    .goal-actions {
+        opacity: 0.7;
     }
 }

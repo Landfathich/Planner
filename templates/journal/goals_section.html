@@ -1,36 +1,32 @@
 {% load static %}
 
 <div class="misc-section goals-section">
-    <div class="section-tabs">
-        <button class="tab-btn active" data-tab="weekly">Недельные</button>
-        <button class="tab-btn" data-tab="monthly">Месячные</button>
-    </div>
-
-    <!-- Вкладка недельных целей -->
-    <div class="tab-content active" id="weekly-goals-tab">
-        <div class="section-header">
-            <h3>Цели недели</h3>
-            <button class="add-goal-btn" data-type="weekly">+</button>
-        </div>
-        <div class="section-content">
+    <!-- Две колонки: цели недели и цели месяца -->
+    <div class="goals-columns">
+        <!-- Колонка целей недели -->
+        <div class="goals-column weekly-column">
+            <div class="column-header">
+                <h3>Цели недели</h3>
+                <button class="add-goal-btn" data-type="weekly">+</button>
+            </div>
             <div class="goals-list" id="weekly-goals-list">
-                <div class="goal-item placeholder">
-                    <span class="goal-text">Загрузка целей...</span>
+                <!-- Цели будут загружаться через JavaScript -->
+                <div class="goal-card placeholder">
+                    <span>Загрузка целей...</span>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Вкладка месячных целей -->
-    <div class="tab-content" id="monthly-goals-tab">
-        <div class="section-header">
-            <h3>Цели месяца</h3>
-            <button class="add-goal-btn" data-type="monthly">+</button>
-        </div>
-        <div class="section-content">
+        <!-- Колонка целей месяца -->
+        <div class="goals-column monthly-column">
+            <div class="column-header">
+                <h3>Цели месяца</h3>
+                <!-- БЕЗ плюсика - только просмотр -->
+            </div>
             <div class="goals-list" id="monthly-goals-list">
-                <div class="goal-item placeholder">
-                    <span class="goal-text">Загрузка целей...</span>
+                <!-- Заглушка для целей месяца -->
+                <div class="goal-card placeholder">
+                    <span>Скоро появятся...</span>
                 </div>
             </div>
         </div>

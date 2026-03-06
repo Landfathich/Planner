@@ -1,10 +1,9 @@
-/* Трекер привычек - уникальные классы */
 .habit-section {
-    width: 100%;
-    background: var(--card-bg);
-    border-radius: 8px;
-    padding: 10px;
-    box-sizing: border-box;
+    flex: 3;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .habit-section-header {
@@ -61,15 +60,17 @@
 }
 
 .habit-content {
-    width: 100%;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .habit-list {
-    max-height: 300px;
+    flex: 1;
     overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary) var(--card-bg);
+    min-height: 0;
     padding-right: 5px;
 }
 
@@ -95,6 +96,7 @@
 .habit-row {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
     padding: 8px 0;
     border-bottom: 1px solid var(--border-color);
     transition: background-color 0.2s;

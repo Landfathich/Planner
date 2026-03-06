@@ -146,26 +146,33 @@ export class GoalsManager {
     }
 
     createGoalElement(goal, type) {
-        const div = document.createElement('div');
-        div.className = `goal-item ${goal.is_completed ? 'completed' : ''} ${goal.is_carried_over ? 'carried' : ''}`;
-        div.dataset.goalId = goal.id;
-        div.dataset.goalType = type;
+    const div = document.createElement('div');
+    div.className = `goal-card ${goal.is_completed ? 'completed' : ''} ${goal.is_carried_over ? 'carried' : ''}`;
+    div.dataset.goalId = goal.id;
+    div.dataset.goalType = type;
 
-        const typeIcon = goal.goal_type === 'ongoing' ? '🕑' : '✔️';
+    const typeIcon = goal.goal_type === 'ongoing' ? '🕑' : '✔️';
 
-        div.innerHTML = `
+    div.innerHTML = `
+        <div class="goal-header">
             <span class="goal-type-icon">${typeIcon}</span>
             <span class="goal-text">${goal.text}</span>
             <div class="goal-actions">
-                <button class="goal-complete" title="${goal.is_completed ? 'Отменить выполнение' : 'Отметить выполненной'}">✓</button>
+                <button class="goal-complete" title="${goal.is_completed ? 'Отменить' : 'Выполнить'}">✓</button>
                 <button class="goal-edit" title="Редактировать">✎</button>
                 <button class="goal-carry" title="Перенести на след. неделю">→</button>
                 <button class="goal-delete" title="Удалить">×</button>
             </div>
-        `;
+        </div>
+        ${goal.is_carried_over ? `
+            <div class="goal-meta">
+                <span class="carry-badge">перенесена</span>
+            </div>
+        ` : ''}
+    `;
 
-        return div;
-    }
+    return div;
+}
 
     async toggleGoalComplete(goalId, type) {
         try {
