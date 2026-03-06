@@ -58,28 +58,15 @@ class WeekView(LoginRequiredMixin, TemplateView):
         today = timezone.now().date()
         start_date = today - timedelta(days=today.weekday())
 
-        # Получаем или создаем профиль пользователя
-        profile, created = UserProfile.objects.get_or_create(
-            user=self.request.user,
-            defaults={
-                'start_week_date': start_date,
-                'start_week_number': 1
-            }
-        )
-
-        # Вычисляем номер текущей недели
-        week_number = profile.get_current_week_number(start_date)
-
         context['week_start'] = start_date
         context['week_end'] = start_date + timedelta(days=6)
         context['today_date'] = today
-        # TODO
-        # context['week_number'] = week_number
+
         return context
 
 
 @login_required
-def week_tasks(request):
+def week_data(request):
     try:
         week_offset = int(request.GET.get('week_offset', 0))
 
@@ -101,33 +88,27 @@ def week_tasks(request):
             date__range=[start_date, end_date]
         )
 
-        tasks_data = []
-        for task in tasks:
-            tasks_data.append({
-                'id': task.id,
-                'title': task.title,
-                'description': task.description or '',
-                'is_done': task.is_done,
-                'date': task.date.isoformat(),
-                'is_weekly': task.is_weekly
-            })
+        tasks_data = [{
+            'id': task.id,
+            'title': task.title,
+            'description': task.description or '',
+            'is_done': task.is_done,
+            'date': task.date.isoformat(),
+            'is_weekly': task.is_weekly
+        } for task in tasks]
 
-        # Получаем ВСЕ привычки пользователя
+        # Привычки
         all_habits = Habit.objects.filter(user=request.user)
-
         habits_data = []
         for habit in all_habits:
-            # Проверяем, активна ли привычка для этой недели
             if not habit.is_active_for_week(start_date):
-                continue  # Пропускаем неактивные привычки
+                continue
 
-            # Получаем записи для этой недели
             entries = HabitEntry.objects.filter(
                 habit=habit,
                 date__range=[start_date, end_date]
             )
 
-            # Создаем словарь статусов по датам
             entries_dict = {}
             for entry in entries:
                 entries_dict[entry.date.isoformat()] = entry.status
@@ -139,10 +120,24 @@ def week_tasks(request):
                 'order': habit.order,
                 'start_date': habit.start_date.isoformat() if habit.start_date else None,
                 'end_date': habit.end_date.isoformat() if habit.end_date else None,
-                'entries': entries_dict  # {'2026-03-02': 'checked', ...}
+                'entries': entries_dict
             })
 
-        print(f"Returning {len(tasks_data)} tasks and {len(habits_data)} active habits")
+        # ЦЕЛИ НЕДЕЛИ - ДОБАВЛЯЕМ
+        weekly_goals = WeeklyGoal.objects.filter(
+            user=request.user,
+            week_start=start_date
+        )
+
+        goals_data = [{
+            'id': goal.id,
+            'text': goal.text,
+            'goal_type': goal.goal_type,
+            'is_completed': goal.is_completed,
+            'is_carried_over': goal.is_carried_over
+        } for goal in weekly_goals]
+
+        print(f"Returning {len(tasks_data)} tasks, {len(habits_data)} habits, {len(goals_data)} goals")
 
         return JsonResponse({
             'success': True,
@@ -150,7 +145,8 @@ def week_tasks(request):
             'week_end': end_date.isoformat(),
             'week_number': week_number,
             'tasks': tasks_data,
-            'habits': habits_data
+            'habits': habits_data,
+            'weekly_goals': goals_data  # ДОБАВИЛИ
         })
 
     except Exception as e:
@@ -406,4 +402,84 @@ def update_habit_entry(request):
         return JsonResponse({'error': 'Habit not found'}, status=404)
     except Exception as e:
         print(f"Error in update_habit_entry: {e}")
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+from .models import WeeklyGoal
+
+
+@login_required
+def create_weekly_goal(request):
+    """Создать новую цель на неделю"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+
+        goal = WeeklyGoal.objects.create(
+            user=request.user,
+            text=data['text'],
+            goal_type=data.get('goal_type', 'once'),
+            week_start=data['week_start'],
+            is_completed=data.get('is_completed', False),
+            is_carried_over=data.get('is_carried_over', False)
+        )
+
+        return JsonResponse({
+            'id': goal.id,
+            'text': goal.text,
+            'goal_type': goal.goal_type,
+            'is_completed': goal.is_completed,
+            'is_carried_over': goal.is_carried_over
+        })
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+def update_weekly_goal(request, goal_id):
+    """Обновить цель"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    try:
+        goal = WeeklyGoal.objects.get(id=goal_id, user=request.user)
+        data = json.loads(request.body)
+
+        goal.text = data.get('text', goal.text)
+        goal.goal_type = data.get('goal_type', goal.goal_type)
+        goal.is_completed = data.get('is_completed', goal.is_completed)
+        goal.is_carried_over = data.get('is_carried_over', goal.is_carried_over)
+        goal.save()
+
+        return JsonResponse({
+            'id': goal.id,
+            'text': goal.text,
+            'goal_type': goal.goal_type,
+            'is_completed': goal.is_completed,
+            'is_carried_over': goal.is_carried_over
+        })
+
+    except WeeklyGoal.DoesNotExist:
+        return JsonResponse({'error': 'Goal not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+def delete_weekly_goal(request, goal_id):
+    """Удалить цель"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    try:
+        goal = WeeklyGoal.objects.get(id=goal_id, user=request.user)
+        goal.delete()
+        return JsonResponse({'success': True})
+
+    except WeeklyGoal.DoesNotExist:
+        return JsonResponse({'error': 'Goal not found'}, status=404)
+    except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)

@@ -86,7 +86,7 @@ export class WeekManager {
 
     async loadWeekTasks(offset) {
         try {
-            const response = await fetch(`/api/tasks/week/?week_offset=${offset}`);
+            const response = await fetch(`/api/week-data/?week_offset=${offset}`);
             if (response.ok) {
                 const data = await response.json();
 

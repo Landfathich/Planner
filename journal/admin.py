@@ -46,3 +46,11 @@ class HabitEntryAdmin(admin.ModelAdmin):
     list_display = ['habit', 'date', 'status']
     list_filter = ['status', 'date']
     search_fields = ['habit__name']
+
+from .models import WeeklyGoal
+
+@admin.register(WeeklyGoal)
+class WeeklyGoalAdmin(admin.ModelAdmin):
+    list_display = ['text', 'user', 'week_start', 'goal_type', 'is_completed', 'is_carried_over']
+    list_filter = ['goal_type', 'is_completed', 'week_start']
+    search_fields = ['text']

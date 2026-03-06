@@ -10,7 +10,7 @@ export class HabitTracker {
     // Загружаем и отображаем привычки
     async loadAndDisplayHabits() {
         try {
-            const response = await fetch(`/api/tasks/week/?week_offset=${this.weekManager.currentWeekOffset}`);
+            const response = await fetch(`/api/week-data/?week_offset=${this.weekManager.currentWeekOffset}`);
             if (response.ok) {
                 const data = await response.json();
                 this.habits = data.habits || [];

@@ -1,12 +1,14 @@
 import {WeekManager} from './weekManager.js';
 import {TaskManager} from './taskManager.js';
 import {HabitTracker} from './habitTracker.js';
+import {GoalsManager} from './goalsManager.js';
 
 class DailyPlannerApp {
     constructor() {
         this.weekManager = new WeekManager();
         this.taskManager = new TaskManager(this.weekManager);
         this.habitTracker = new HabitTracker(this.weekManager);
+        this.goalsManager = new GoalsManager(this.weekManager);
 
         this.setupEventListeners();
         this.init();
@@ -43,12 +45,11 @@ class DailyPlannerApp {
     async loadAndDisplayWeek() {
         this.weekManager.updateWeekInfo();
 
-        // Загружаем задачи
         const tasks = await this.weekManager.loadWeekTasks(this.weekManager.currentWeekOffset);
         this.taskManager.displayTasksForWeek(tasks, this.weekManager.getCurrentWeekDates());
 
-        // Загружаем привычки
         await this.habitTracker.updateForWeek();
+        await this.goalsManager.updateForWeek();
     }
 }
 

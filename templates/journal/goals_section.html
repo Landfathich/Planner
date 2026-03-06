@@ -1,0 +1,75 @@
+{% load static %}
+
+<div class="misc-section goals-section">
+    <div class="section-tabs">
+        <button class="tab-btn active" data-tab="weekly">Недельные</button>
+        <button class="tab-btn" data-tab="monthly">Месячные</button>
+    </div>
+
+    <!-- Вкладка недельных целей -->
+    <div class="tab-content active" id="weekly-goals-tab">
+        <div class="section-header">
+            <h3>Цели недели</h3>
+            <button class="add-goal-btn" data-type="weekly">+</button>
+        </div>
+        <div class="section-content">
+            <div class="goals-list" id="weekly-goals-list">
+                <div class="goal-item placeholder">
+                    <span class="goal-text">Загрузка целей...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вкладка месячных целей -->
+    <div class="tab-content" id="monthly-goals-tab">
+        <div class="section-header">
+            <h3>Цели месяца</h3>
+            <button class="add-goal-btn" data-type="monthly">+</button>
+        </div>
+        <div class="section-content">
+            <div class="goals-list" id="monthly-goals-list">
+                <div class="goal-item placeholder">
+                    <span class="goal-text">Загрузка целей...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для целей -->
+<div id="goal-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" id="close-goal-modal">&times;</span>
+        <h3 class="modal-title" id="goal-modal-title">Добавить цель</h3>
+        <form id="goal-form">
+            <input type="hidden" id="goal-id" name="id">
+            <input type="hidden" id="goal-type" name="type">
+            <input type="hidden" id="goal-week-start" name="week_start">
+
+            <div class="form-group">
+                <label for="goal-text">Текст цели:</label>
+                <textarea id="goal-text" name="text" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Тип цели:</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="goal_type" value="once" checked>
+                        <span>✔️ Однократная</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="goal_type" value="ongoing">
+                        <span>🕑 Постоянная</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="danger-button" id="delete-goal-btn" style="display: none;">Удалить</button>
+                <button type="submit" class="styled-button">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>

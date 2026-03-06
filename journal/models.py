@@ -109,3 +109,27 @@ class HabitEntry(models.Model):
 
     def __str__(self):
         return f"{self.habit.name} - {self.date} - {self.get_status_display()}"
+
+
+class WeeklyGoal(models.Model):
+    GOAL_TYPES = [
+        ('once', '✔️ Однократная'),
+        ('ongoing', '🕑 Постоянная'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='weekly_goals')
+    text = models.CharField(max_length=500, verbose_name="Текст цели")
+    goal_type = models.CharField(max_length=10, choices=GOAL_TYPES, default='once', verbose_name="Тип цели")
+    week_start = models.DateField(verbose_name="Неделя (понедельник)")
+    is_completed = models.BooleanField(default=False, verbose_name="Выполнена")
+    is_carried_over = models.BooleanField(default=False, verbose_name="Перенесена на след. неделю")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['week_start', '-created_at']
+        verbose_name = "Цель недели"
+        verbose_name_plural = "Цели недели"
+
+    def __str__(self):
+        return f"{self.text[:50]}... ({self.week_start})"
