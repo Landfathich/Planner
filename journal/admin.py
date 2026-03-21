@@ -49,8 +49,23 @@ class HabitEntryAdmin(admin.ModelAdmin):
 
 from .models import WeeklyGoal
 
+
 @admin.register(WeeklyGoal)
 class WeeklyGoalAdmin(admin.ModelAdmin):
-    list_display = ['text', 'user', 'week_start', 'goal_type', 'is_completed', 'is_carried_over']
-    list_filter = ['goal_type', 'is_completed', 'week_start']
+    list_display = ['text', 'user', 'week_start', 'is_completed', 'is_carried_over', 'created_at']
+    list_filter = ['is_completed', 'is_carried_over', 'week_start']
     search_fields = ['text']
+    readonly_fields = ['created_at', 'updated_at']
+
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('user', 'text', 'week_start')
+        }),
+        ('Статус', {
+            'fields': ('is_completed', 'is_carried_over')
+        }),
+        ('Даты', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )

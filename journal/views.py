@@ -132,7 +132,6 @@ def week_data(request):
         goals_data = [{
             'id': goal.id,
             'text': goal.text,
-            'goal_type': goal.goal_type,
             'is_completed': goal.is_completed,
             'is_carried_over': goal.is_carried_over
         } for goal in weekly_goals]
@@ -420,7 +419,6 @@ def create_weekly_goal(request):
         goal = WeeklyGoal.objects.create(
             user=request.user,
             text=data['text'],
-            goal_type=data.get('goal_type', 'once'),
             week_start=data['week_start'],
             is_completed=data.get('is_completed', False),
             is_carried_over=data.get('is_carried_over', False)
@@ -429,7 +427,6 @@ def create_weekly_goal(request):
         return JsonResponse({
             'id': goal.id,
             'text': goal.text,
-            'goal_type': goal.goal_type,
             'is_completed': goal.is_completed,
             'is_carried_over': goal.is_carried_over
         })
@@ -449,7 +446,6 @@ def update_weekly_goal(request, goal_id):
         data = json.loads(request.body)
 
         goal.text = data.get('text', goal.text)
-        goal.goal_type = data.get('goal_type', goal.goal_type)
         goal.is_completed = data.get('is_completed', goal.is_completed)
         goal.is_carried_over = data.get('is_carried_over', goal.is_carried_over)
         goal.save()
@@ -457,7 +453,6 @@ def update_weekly_goal(request, goal_id):
         return JsonResponse({
             'id': goal.id,
             'text': goal.text,
-            'goal_type': goal.goal_type,
             'is_completed': goal.is_completed,
             'is_carried_over': goal.is_carried_over
         })

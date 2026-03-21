@@ -112,14 +112,8 @@ class HabitEntry(models.Model):
 
 
 class WeeklyGoal(models.Model):
-    GOAL_TYPES = [
-        ('once', '✔️ Однократная'),
-        ('ongoing', '🕑 Постоянная'),
-    ]
-
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='weekly_goals')
     text = models.CharField(max_length=500, verbose_name="Текст цели")
-    goal_type = models.CharField(max_length=10, choices=GOAL_TYPES, default='once', verbose_name="Тип цели")
     week_start = models.DateField(verbose_name="Неделя (понедельник)")
     is_completed = models.BooleanField(default=False, verbose_name="Выполнена")
     is_carried_over = models.BooleanField(default=False, verbose_name="Перенесена на след. неделю")

@@ -25,30 +25,30 @@ export class GoalsManager {
             });
         });
 
-         // Закрытие модалки
-    document.getElementById('close-goal-modal').addEventListener('click', () => {
-        document.getElementById('goal-modal').style.display = 'none';
-    });
-
-    // Сабмит формы
-    document.getElementById('goal-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        this.saveGoal();
-    });
-
-    // Удаление (в модалке)
-    document.getElementById('delete-goal-btn').addEventListener('click', () => {
-        if (this.currentEditId) {
-            this.deleteGoal(this.currentEditId, 'weekly');
+        // Закрытие модалки
+        document.getElementById('close-goal-modal').addEventListener('click', () => {
             document.getElementById('goal-modal').style.display = 'none';
-        }
-    });
+        });
 
-    // Закрытие по клику вне модалки
-    window.addEventListener('click', (e) => {
-        const modal = document.getElementById('goal-modal');
-        if (e.target === modal) modal.style.display = 'none';
-    });
+        // Сабмит формы
+        document.getElementById('goal-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.saveGoal();
+        });
+
+        // Удаление (в модалке)
+        document.getElementById('delete-goal-btn').addEventListener('click', () => {
+            if (this.currentEditId) {
+                this.deleteGoal(this.currentEditId, 'weekly');
+                document.getElementById('goal-modal').style.display = 'none';
+            }
+        });
+
+        // Закрытие по клику вне модалки
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('goal-modal');
+            if (e.target === modal) modal.style.display = 'none';
+        });
 
         // Обработка кликов по целям (делегирование)
         document.addEventListener('click', (e) => {
@@ -80,39 +80,53 @@ export class GoalsManager {
     }
 
     async saveGoal() {
-    const goalId = document.getElementById('goal-id').value;
-    const isEditing = !!goalId;
+        const goalId = document.getElementById('goal-id').value;
+        const isEditing = !!goalId;
 
-    const goalData = {
-        text: document.getElementById('goal-text').value,
-        goal_type: document.querySelector('input[name="goal_type"]:checked').value,
-        week_start: document.getElementById('goal-week-start').value
-    };
+        const weekStartInput = document.getElementById('goal-week-start');
+        const textInput = document.getElementById('goal-text');
 
-    const url = isEditing ? `/api/weekly-goals/${goalId}/update/` : '/api/weekly-goals/create/';
-
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': this.getCSRFToken()
-            },
-            body: JSON.stringify(goalData)
-        });
-
-        if (response.ok) {
-            document.getElementById('goal-modal').style.display = 'none';
-            await this.loadGoals();
-            showNotification(isEditing ? 'Цель обновлена' : 'Цель создана', 'success');
-        } else {
-            throw new Error('Failed to save goal');
+        if (!weekStartInput || !textInput) {
+            console.error('Missing form elements');
+            showNotification('Ошибка формы', 'error');
+            return;
         }
-    } catch (error) {
-        console.error('Error saving goal:', error);
-        showNotification('Ошибка при сохранении', 'error');
+
+        const goalData = {
+            text: textInput.value,
+            week_start: weekStartInput.value
+        };
+
+        if (!goalData.text.trim()) {
+            showNotification('Введите текст цели', 'error');
+            return;
+        }
+
+        const url = isEditing ? `/api/weekly-goals/${goalId}/update/` : '/api/weekly-goals/create/';
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCSRFToken()
+                },
+                body: JSON.stringify(goalData)
+            });
+
+            if (response.ok) {
+                document.getElementById('goal-modal').style.display = 'none';
+                await this.loadGoals();
+                showNotification(isEditing ? 'Цель обновлена' : 'Цель создана', 'success');
+            } else {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to save goal');
+            }
+        } catch (error) {
+            console.error('Error saving goal:', error);
+            showNotification('Ошибка при сохранении', 'error');
+        }
     }
-}
 
     async loadGoals(weekStart) {
         try {
@@ -146,16 +160,13 @@ export class GoalsManager {
     }
 
     createGoalElement(goal, type) {
-    const div = document.createElement('div');
-    div.className = `goal-card ${goal.is_completed ? 'completed' : ''} ${goal.is_carried_over ? 'carried' : ''}`;
-    div.dataset.goalId = goal.id;
-    div.dataset.goalType = type;
+        const div = document.createElement('div');
+        div.className = `goal-card ${goal.is_completed ? 'completed' : ''} ${goal.is_carried_over ? 'carried' : ''}`;
+        div.dataset.goalId = goal.id;
+        div.dataset.goalType = type;
 
-    const typeIcon = goal.goal_type === 'ongoing' ? '🕑' : '✔️';
-
-    div.innerHTML = `
+        div.innerHTML = `
         <div class="goal-header">
-            <span class="goal-type-icon">${typeIcon}</span>
             <span class="goal-text">${goal.text}</span>
             <div class="goal-actions">
                 <button class="goal-complete" title="${goal.is_completed ? 'Отменить' : 'Выполнить'}">✓</button>
@@ -171,8 +182,8 @@ export class GoalsManager {
         ` : ''}
     `;
 
-    return div;
-}
+        return div;
+    }
 
     async toggleGoalComplete(goalId, type) {
         try {
@@ -276,13 +287,26 @@ export class GoalsManager {
     const modalTitle = document.getElementById('goal-modal-title');
     const deleteBtn = document.getElementById('delete-goal-btn');
     const form = document.getElementById('goal-form');
-    const weekStart = this.weekManager.getCurrentWeekDates()[0].toISOString().split('T')[0];
+
+    if (!modal || !modalTitle || !deleteBtn || !form) {
+        console.error('Modal elements not found');
+        return;
+    }
+
+    // Получаем понедельник текущей недели
+    const currentWeekDates = this.weekManager.getCurrentWeekDates();
+    if (!currentWeekDates || currentWeekDates.length === 0) {
+        console.error('No week dates found');
+        return;
+    }
+
+    const weekStart = currentWeekDates[0].toISOString().split('T')[0];
 
     // Сбрасываем форму
     form.reset();
     document.getElementById('goal-id').value = '';
-    document.getElementById('goal-type').value = type;
     document.getElementById('goal-week-start').value = weekStart;
+    document.getElementById('goal-text').value = '';
 
     if (goalId) {
         // Редактирование
@@ -294,11 +318,10 @@ export class GoalsManager {
             document.getElementById('goal-id').value = goal.id;
             document.getElementById('goal-text').value = goal.text;
 
-            // Выбираем нужный radio
-            const radio = document.querySelector(`input[name="goal_type"][value="${goal.goal_type}"]`);
-            if (radio) radio.checked = true;
-
             this.currentEditId = goalId;
+        } else {
+            console.error('Goal not found:', goalId);
+            return;
         }
     } else {
         // Создание

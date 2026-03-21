@@ -40,26 +40,11 @@
         <h3 class="modal-title" id="goal-modal-title">Добавить цель</h3>
         <form id="goal-form">
             <input type="hidden" id="goal-id" name="id">
-            <input type="hidden" id="goal-type" name="type">
             <input type="hidden" id="goal-week-start" name="week_start">
 
             <div class="form-group">
                 <label for="goal-text">Текст цели:</label>
                 <textarea id="goal-text" name="text" rows="3" required></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Тип цели:</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="goal_type" value="once" checked>
-                        <span>✔️ Однократная</span>
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="goal_type" value="ongoing">
-                        <span>🕑 Постоянная</span>
-                    </label>
-                </div>
             </div>
 
             <div class="form-actions">
