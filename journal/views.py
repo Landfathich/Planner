@@ -478,3 +478,233 @@ def delete_weekly_goal(request, goal_id):
         return JsonResponse({'error': 'Goal not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+class GoalsView(LoginRequiredMixin, TemplateView):
+    template_name = "journal/general_goals.html"
+
+
+from .models import YearlyGoal, YearlyReport, MonthlyGoal, MonthlyReport
+from datetime import date
+
+
+@login_required
+def goals_years_list(request):
+    """Получить список всех годов, для которых есть данные"""
+    years = set()
+    for goal in YearlyGoal.objects.filter(user=request.user):
+        years.add(goal.year)
+    for report in YearlyReport.objects.filter(user=request.user):
+        years.add(report.year)
+    for goal in MonthlyGoal.objects.filter(user=request.user):
+        years.add(goal.year)
+    for report in MonthlyReport.objects.filter(user=request.user):
+        years.add(report.year)
+
+    years = sorted(list(years), reverse=True)
+    return JsonResponse({'years': years})
+
+
+@login_required
+def goals_create_year(request):
+    """Создать новый год (создаёт пустые структуры)"""
+    data = json.loads(request.body)
+    year = data.get('year')
+
+    if not year:
+        return JsonResponse({'error': 'Year required'}, status=400)
+
+    # Проверяем, есть ли уже данные за этот год
+    yearly_goals_exists = YearlyGoal.objects.filter(user=request.user, year=year).exists()
+    yearly_report_exists = YearlyReport.objects.filter(user=request.user, year=year).exists()
+    monthly_goals_exists = MonthlyGoal.objects.filter(user=request.user, year=year).exists()
+    monthly_reports_exists = MonthlyReport.objects.filter(user=request.user, year=year).exists()
+
+    if not yearly_goals_exists and not yearly_report_exists and not monthly_goals_exists and not monthly_reports_exists:
+        # СОЗДАЁМ ХОТЯ БЫ ОДНУ ЗАПИСЬ, ЧТОБЫ ГОД ПОЯВИЛСЯ В СПИСКЕ
+        YearlyReport.objects.create(
+            user=request.user,
+            year=year,
+            text=""
+        )
+
+    return JsonResponse({'success': True})
+
+
+@login_required
+def goals_year_data(request, year):
+    """Получить все данные за год: годовые цели, цели по месяцам, отчёты"""
+    yearly_goals = YearlyGoal.objects.filter(user=request.user, year=year)
+    yearly_report = YearlyReport.objects.filter(user=request.user, year=year).first()
+
+    monthly_goals = {}
+    for month in range(1, 13):
+        goals = MonthlyGoal.objects.filter(user=request.user, year=year, month=month)
+        monthly_goals[month] = [{
+            'id': g.id,
+            'text': g.text,
+            'is_completed': g.is_completed,
+            'carried_over': g.carried_over
+        } for g in goals]
+
+    monthly_reports = {}
+    for month in range(1, 13):
+        report = MonthlyReport.objects.filter(user=request.user, year=year, month=month).first()
+        if report:
+            monthly_reports[month] = {'id': report.id, 'text': report.text}
+
+    return JsonResponse({
+        'yearly_goals': [{
+            'id': g.id,
+            'text': g.text,
+            'is_completed': g.is_completed
+        } for g in yearly_goals],
+        'yearly_report': {'id': yearly_report.id, 'text': yearly_report.text} if yearly_report else None,
+        'monthly_goals': monthly_goals,
+        'monthly_reports': monthly_reports
+    })
+
+
+@login_required
+def goals_create_yearly_goal(request):
+    data = json.loads(request.body)
+    goal = YearlyGoal.objects.create(
+        user=request.user,
+        year=data['year'],
+        text=data['text']
+    )
+    return JsonResponse({'id': goal.id, 'text': goal.text, 'is_completed': goal.is_completed})
+
+
+@login_required
+def goals_toggle_yearly_goal(request, goal_id):
+    goal = YearlyGoal.objects.get(id=goal_id, user=request.user)
+    goal.is_completed = not goal.is_completed
+    goal.save()
+    return JsonResponse({'success': True})
+
+
+@login_required
+def goals_update_yearly_goal(request, goal_id):
+    data = json.loads(request.body)
+    goal = YearlyGoal.objects.get(id=goal_id, user=request.user)
+    goal.text = data['text']
+    goal.save()
+    return JsonResponse({'success': True})
+
+
+@login_required
+def goals_delete_yearly_goal(request, goal_id):
+    goal = YearlyGoal.objects.get(id=goal_id, user=request.user)
+    goal.delete()
+    return JsonResponse({'success': True})
+
+
+@login_required
+def goals_carry_yearly_goal(request, goal_id):
+    """Перенести годовую цель на следующий год"""
+    goal = YearlyGoal.objects.get(id=goal_id, user=request.user)
+    next_year = goal.year + 1
+
+    # Создаём копию на следующий год
+    YearlyGoal.objects.create(
+        user=request.user,
+        year=next_year,
+        text=goal.text,
+        is_completed=False
+    )
+
+    # Помечаем текущую как выполненную? или оставляем? оставляем как есть
+    return JsonResponse({'success': True})
+
+
+@login_required
+def goals_create_monthly_goal(request):
+    data = json.loads(request.body)
+    goal = MonthlyGoal.objects.create(
+        user=request.user,
+        year=data['year'],
+        month=data['month'],
+        text=data['text']
+    )
+    return JsonResponse({'id': goal.id, 'text': goal.text, 'is_completed': goal.is_completed})
+
+
+@login_required
+def goals_toggle_monthly_goal(request, goal_id):
+    goal = MonthlyGoal.objects.get(id=goal_id, user=request.user)
+    goal.is_completed = not goal.is_completed
+    goal.save()
+    return JsonResponse({'success': True})
+
+
+@login_required
+def goals_update_monthly_goal(request, goal_id):
+    data = json.loads(request.body)
+    goal = MonthlyGoal.objects.get(id=goal_id, user=request.user)
+    goal.text = data['text']
+    goal.save()
+    return JsonResponse({'success': True})
+
+
+@login_required
+def goals_delete_monthly_goal(request, goal_id):
+    goal = MonthlyGoal.objects.get(id=goal_id, user=request.user)
+    goal.delete()
+    return JsonResponse({'success': True})
+
+
+@login_required
+def goals_carry_monthly_goal(request, goal_id):
+    """Перенести цель на следующий месяц"""
+    goal = MonthlyGoal.objects.get(id=goal_id, user=request.user)
+
+    next_month = goal.month + 1
+    next_year = goal.year
+    if next_month > 12:
+        next_month = 1
+        next_year = goal.year + 1
+
+    # Создаём копию на следующий месяц
+    MonthlyGoal.objects.create(
+        user=request.user,
+        year=next_year,
+        month=next_month,
+        text=goal.text,
+        is_completed=False,
+        carried_over=True
+    )
+
+    # Помечаем текущую как перенесённую
+    goal.carried_over = True
+    goal.save()
+
+    return JsonResponse({'success': True})
+
+
+@login_required
+def goals_update_yearly_report(request):
+    data = json.loads(request.body)
+    report, created = YearlyReport.objects.get_or_create(
+        user=request.user,
+        year=data['year'],
+        defaults={'text': data['text']}
+    )
+    if not created:
+        report.text = data['text']
+        report.save()
+    return JsonResponse({'success': True})
+
+
+@login_required
+def goals_update_monthly_report(request):
+    data = json.loads(request.body)
+    report, created = MonthlyReport.objects.get_or_create(
+        user=request.user,
+        year=data['year'],
+        month=data['month'],
+        defaults={'text': data['text']}
+    )
+    if not created:
+        report.text = data['text']
+        report.save()
+    return JsonResponse({'success': True})

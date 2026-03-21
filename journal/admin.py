@@ -69,3 +69,28 @@ class WeeklyGoalAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+
+from .models import YearlyGoal, YearlyReport, MonthlyGoal, MonthlyReport
+
+@admin.register(YearlyGoal)
+class YearlyGoalAdmin(admin.ModelAdmin):
+    list_display = ['text', 'user', 'year', 'is_completed', 'created_at']
+    list_filter = ['year', 'is_completed']
+    search_fields = ['text']
+
+@admin.register(YearlyReport)
+class YearlyReportAdmin(admin.ModelAdmin):
+    list_display = ['user', 'year', 'created_at']
+    list_filter = ['year']
+
+@admin.register(MonthlyGoal)
+class MonthlyGoalAdmin(admin.ModelAdmin):
+    list_display = ['text', 'user', 'year', 'month', 'is_completed', 'carried_over']
+    list_filter = ['year', 'month', 'is_completed', 'carried_over']
+    search_fields = ['text']
+
+@admin.register(MonthlyReport)
+class MonthlyReportAdmin(admin.ModelAdmin):
+    list_display = ['user', 'year', 'month', 'created_at']
+    list_filter = ['year', 'month']

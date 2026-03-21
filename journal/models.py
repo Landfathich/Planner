@@ -127,3 +127,72 @@ class WeeklyGoal(models.Model):
 
     def __str__(self):
         return f"{self.text[:50]}... ({self.week_start})"
+
+
+class YearlyGoal(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='yearly_goals')
+    year = models.IntegerField(verbose_name="Год")
+    text = models.TextField(verbose_name="Текст цели")
+    is_completed = models.BooleanField(default=False, verbose_name="Выполнена")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['year', 'created_at']
+        verbose_name = "Годовая цель"
+        verbose_name_plural = "Годовые цели"
+
+    def __str__(self):
+        return f"{self.year}: {self.text[:50]}"
+
+
+class YearlyReport(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='yearly_reports')
+    year = models.IntegerField(verbose_name="Год")
+    text = models.TextField(verbose_name="Годовой отчёт", blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-year']
+        verbose_name = "Годовой отчёт"
+        verbose_name_plural = "Годовые отчёты"
+
+    def __str__(self):
+        return f"Отчёт за {self.year}"
+
+
+class MonthlyGoal(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='monthly_goals')
+    year = models.IntegerField(verbose_name="Год")
+    month = models.IntegerField(verbose_name="Месяц (1-12)")
+    text = models.TextField(verbose_name="Текст цели")
+    is_completed = models.BooleanField(default=False, verbose_name="Выполнена")
+    carried_over = models.BooleanField(default=False, verbose_name="Перенесена на следующий месяц")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['year', 'month', 'created_at']
+        verbose_name = "Цель месяца"
+        verbose_name_plural = "Цели месяцев"
+
+    def __str__(self):
+        return f"{self.year}-{self.month}: {self.text[:50]}"
+
+
+class MonthlyReport(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='monthly_reports')
+    year = models.IntegerField(verbose_name="Год")
+    month = models.IntegerField(verbose_name="Месяц (1-12)")
+    text = models.TextField(verbose_name="Отчёт за месяц", blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-year', '-month']
+        verbose_name = "Отчёт за месяц"
+        verbose_name_plural = "Отчёты за месяц"
+
+    def __str__(self):
+        return f"Отчёт за {self.year}-{self.month}"

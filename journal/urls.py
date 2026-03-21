@@ -21,4 +21,23 @@ urlpatterns = [
     path('api/weekly-goals/create/', views.create_weekly_goal, name='create_weekly_goal'),
     path('api/weekly-goals/<int:goal_id>/update/', views.update_weekly_goal, name='update_weekly_goal'),
     path('api/weekly-goals/<int:goal_id>/delete/', views.delete_weekly_goal, name='delete_weekly_goal'),
+
+    path('goals/', views.GoalsView.as_view(), name='goals'),
+
+    # Goals API
+    path('api/goals/years/', views.goals_years_list, name='goals_years_list'),
+    path('api/goals/years/create/', views.goals_create_year, name='goals_create_year'),
+    path('api/goals/year/<int:year>/', views.goals_year_data, name='goals_year_data'),
+    path('api/goals/yearly/create/', views.goals_create_yearly_goal, name='goals_create_yearly_goal'),
+    path('api/goals/yearly/<int:goal_id>/toggle/', views.goals_toggle_yearly_goal, name='goals_toggle_yearly_goal'),
+    path('api/goals/yearly/<int:goal_id>/update/', views.goals_update_yearly_goal, name='goals_update_yearly_goal'),
+    path('api/goals/yearly/<int:goal_id>/delete/', views.goals_delete_yearly_goal, name='goals_delete_yearly_goal'),
+    path('api/goals/yearly/<int:goal_id>/carry/', views.goals_carry_yearly_goal, name='goals_carry_yearly_goal'),
+    path('api/goals/monthly/create/', views.goals_create_monthly_goal, name='goals_create_monthly_goal'),
+    path('api/goals/monthly/<int:goal_id>/toggle/', views.goals_toggle_monthly_goal, name='goals_toggle_monthly_goal'),
+    path('api/goals/monthly/<int:goal_id>/update/', views.goals_update_monthly_goal, name='goals_update_monthly_goal'),
+    path('api/goals/monthly/<int:goal_id>/delete/', views.goals_delete_monthly_goal, name='goals_delete_monthly_goal'),
+    path('api/goals/monthly/<int:goal_id>/carry/', views.goals_carry_monthly_goal, name='goals_carry_monthly_goal'),
+    path('api/goals/report/yearly/update/', views.goals_update_yearly_report, name='goals_update_yearly_report'),
+    path('api/goals/report/monthly/update/', views.goals_update_monthly_report, name='goals_update_monthly_report'),
 ]

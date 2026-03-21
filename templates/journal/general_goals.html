@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Цели{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'journal/css/general_goals.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="general-goals-container">
+        <!-- Левая панель - годы -->
+        <aside class="years-sidebar">
+            <div class="years-header">
+                <h3>Годы</h3>
+                <button class="add-year-btn" id="add-year-btn">+</button>
+            </div>
+            <div class="years-list" id="years-list">
+                <!-- Годы будут загружаться через JS -->
+            </div>
+        </aside>
+
+        <!-- Правая панель - содержимое выбранного года -->
+        <main class="year-content">
+            <!-- Заголовок года -->
+            <div class="year-header">
+                <h2 id="selected-year">2026</h2>
+            </div>
+
+            <!-- Годовые цели -->
+            <div class="yearly-goals-section">
+                <div class="section-header">
+                    <h3>Годовые цели</h3>
+                    <button class="add-goal-btn" data-type="yearly">+</button>
+                </div>
+                <div class="goals-list" id="yearly-goals-list">
+                    <div class="goal-card placeholder">Загрузка...</div>
+                </div>
+            </div>
+
+            <!-- Месяцы -->
+            <div class="months-container" id="months-container">
+                <!-- Месяцы будут загружаться через JS -->
+            </div>
+
+            <!-- Годовой отчёт -->
+            <div class="yearly-report-section">
+                <div class="section-header">
+                    <h3>Годовой отчёт</h3>
+                    <button class="edit-report-btn" data-type="yearly">✎</button>
+                </div>
+                <div class="report-content" id="yearly-report-content">
+                    <div class="placeholder">Нет отчёта</div>
+                </div>
+            </div>
+        </main>
+    </div>
+{% endblock %}
+
+{% block modals %}
+    <!-- Модальное окно для редактирования отчёта -->
+    <div id="report-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 class="modal-title">Редактировать отчёт</h3>
+            <textarea id="report-text" rows="15" placeholder="Напишите отчёт..."></textarea>
+            <div class="form-actions">
+                <button class="styled-button" id="save-report-btn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'journal/js/generalGoals.js' %}" type="module"></script>
+{% endblock %}
