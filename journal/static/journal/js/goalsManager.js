@@ -9,7 +9,7 @@ export class GoalsManager {
     }
 
     setupEventListeners() {
-        // Переключение табов
+        // Переключение колонок (если нужно)
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const tab = e.target.dataset.tab;
@@ -25,48 +25,61 @@ export class GoalsManager {
             });
         });
 
-        // Закрытие модалки
-        document.getElementById('close-goal-modal').addEventListener('click', () => {
-            document.getElementById('goal-modal').style.display = 'none';
-        });
+        // Обработка кликов по целям (делегирование)
+        document.addEventListener('click', async (e) => {
+            const goalCard = e.target.closest('.goal-card');
+            if (!goalCard) return;
 
-        // Сабмит формы
-        document.getElementById('goal-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.saveGoal();
-        });
+            const goalId = goalCard.dataset.goalId;
+            const goalType = goalCard.dataset.goalType; // 'weekly' или 'monthly'
 
-        // Удаление (в модалке)
-        document.getElementById('delete-goal-btn').addEventListener('click', () => {
-            if (this.currentEditId) {
-                this.deleteGoal(this.currentEditId, 'weekly');
-                document.getElementById('goal-modal').style.display = 'none';
+            if (e.target.classList.contains('goal-complete')) {
+                e.preventDefault();
+                await this.toggleGoalComplete(goalId, goalType);
+            } else if (e.target.classList.contains('goal-edit')) {
+                e.preventDefault();
+                this.openGoalModal(goalType, goalId);
+            } else if (e.target.classList.contains('goal-carry')) {
+                e.preventDefault();
+                await this.carryOverGoal(goalId, goalType);
+            } else if (e.target.classList.contains('goal-delete')) {
+                e.preventDefault();
+                this.deleteGoal(goalId, goalType);
             }
         });
+
+        // Закрытие модалки
+        const closeBtn = document.getElementById('close-goal-modal');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                document.getElementById('goal-modal').style.display = 'none';
+            });
+        }
+
+        // Сабмит формы
+        const goalForm = document.getElementById('goal-form');
+        if (goalForm) {
+            goalForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveGoal();
+            });
+        }
+
+        // Удаление (в модалке)
+        const deleteGoalBtn = document.getElementById('delete-goal-btn');
+        if (deleteGoalBtn) {
+            deleteGoalBtn.addEventListener('click', () => {
+                if (this.currentEditId) {
+                    this.deleteGoal(this.currentEditId, 'weekly');
+                    document.getElementById('goal-modal').style.display = 'none';
+                }
+            });
+        }
 
         // Закрытие по клику вне модалки
         window.addEventListener('click', (e) => {
             const modal = document.getElementById('goal-modal');
             if (e.target === modal) modal.style.display = 'none';
-        });
-
-        // Обработка кликов по целям (делегирование)
-        document.addEventListener('click', (e) => {
-            const goalItem = e.target.closest('.goal-item');
-            if (!goalItem) return;
-
-            const goalId = goalItem.dataset.goalId;
-            const goalType = goalItem.dataset.goalType;
-
-            if (e.target.classList.contains('goal-complete')) {
-                this.toggleGoalComplete(goalId, goalType);
-            } else if (e.target.classList.contains('goal-edit')) {
-                this.openGoalModal(goalType, goalId);
-            } else if (e.target.classList.contains('goal-delete')) {
-                this.deleteGoal(goalId, goalType);
-            } else if (e.target.classList.contains('goal-carry')) {
-                this.carryOverGoal(goalId, goalType);
-            }
         });
     }
 
@@ -197,8 +210,9 @@ export class GoalsManager {
                     'X-CSRFToken': this.getCSRFToken()
                 },
                 body: JSON.stringify({
-                    ...goal,
-                    is_completed: !goal.is_completed
+                    text: goal.text,
+                    is_completed: !goal.is_completed,
+                    is_carried_over: goal.is_carried_over
                 })
             });
 
@@ -206,6 +220,8 @@ export class GoalsManager {
                 goal.is_completed = !goal.is_completed;
                 this.renderWeeklyGoals();
                 showNotification(goal.is_completed ? 'Цель выполнена!' : 'Статус обновлён', 'success');
+            } else {
+                throw new Error('Failed to update');
             }
         } catch (error) {
             console.error('Error toggling goal:', error);
@@ -219,11 +235,12 @@ export class GoalsManager {
             if (!goal) return;
 
             // Создаём копию цели на следующую неделю
-            const nextWeekStart = new Date(this.weekManager.getCurrentWeekDates()[0]);
+            const currentWeekDates = this.weekManager.getCurrentWeekDates();
+            const nextWeekStart = new Date(currentWeekDates[0]);
             nextWeekStart.setDate(nextWeekStart.getDate() + 7);
             const nextWeekStr = nextWeekStart.toISOString().split('T')[0];
 
-            const response = await fetch('/api/weekly-goals/create/', {
+            const createResponse = await fetch('/api/weekly-goals/create/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -231,13 +248,12 @@ export class GoalsManager {
                 },
                 body: JSON.stringify({
                     text: goal.text,
-                    goal_type: goal.goal_type,
                     week_start: nextWeekStr,
                     is_carried_over: true
                 })
             });
 
-            if (response.ok) {
+            if (createResponse.ok) {
                 // Помечаем текущую как перенесённую
                 await fetch(`/api/weekly-goals/${goalId}/update/`, {
                     method: 'POST',
@@ -246,13 +262,16 @@ export class GoalsManager {
                         'X-CSRFToken': this.getCSRFToken()
                     },
                     body: JSON.stringify({
-                        ...goal,
+                        text: goal.text,
+                        is_completed: goal.is_completed,
                         is_carried_over: true
                     })
                 });
 
                 await this.loadGoals();
                 showNotification('Цель перенесена на следующую неделю', 'success');
+            } else {
+                throw new Error('Failed to carry over');
             }
         } catch (error) {
             console.error('Error carrying over goal:', error);
@@ -260,78 +279,81 @@ export class GoalsManager {
         }
     }
 
-    async deleteGoal(goalId, type) {
-        if (!confirm('Удалить эту цель?')) return;
+    deleteGoal(goalId, type) {
+    if (!confirm('Удалить эту цель?')) return;
 
-        try {
-            const response = await fetch(`/api/weekly-goals/${goalId}/delete/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': this.getCSRFToken()
-                }
-            });
-
-            if (response.ok) {
-                this.weeklyGoals = this.weeklyGoals.filter(g => g.id != goalId);
-                this.renderWeeklyGoals();
-                showNotification('Цель удалена', 'success');
-            }
-        } catch (error) {
-            console.error('Error deleting goal:', error);
-            showNotification('Ошибка при удалении', 'error');
+    fetch(`/api/weekly-goals/${goalId}/delete/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': this.getCSRFToken()
         }
-    }
+    })
+    .then(async response => {
+        if (response.ok) {
+            this.weeklyGoals = this.weeklyGoals.filter(g => g.id != goalId);
+            this.renderWeeklyGoals();
+            showNotification('Цель удалена', 'success');
+        } else {
+            const error = await response.json();
+            throw new Error(error.error || 'Delete failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting goal:', error);
+        showNotification('Ошибка при удалении', 'error');
+    });
+}
 
     openGoalModal(type, goalId = null) {
-    const modal = document.getElementById('goal-modal');
-    const modalTitle = document.getElementById('goal-modal-title');
-    const deleteBtn = document.getElementById('delete-goal-btn');
-    const form = document.getElementById('goal-form');
+        const modal = document.getElementById('goal-modal');
+        const modalTitle = document.getElementById('goal-modal-title');
+        const deleteBtn = document.getElementById('delete-goal-btn');
+        const form = document.getElementById('goal-form');
 
-    if (!modal || !modalTitle || !deleteBtn || !form) {
-        console.error('Modal elements not found');
-        return;
-    }
-
-    // Получаем понедельник текущей недели
-    const currentWeekDates = this.weekManager.getCurrentWeekDates();
-    if (!currentWeekDates || currentWeekDates.length === 0) {
-        console.error('No week dates found');
-        return;
-    }
-
-    const weekStart = currentWeekDates[0].toISOString().split('T')[0];
-
-    // Сбрасываем форму
-    form.reset();
-    document.getElementById('goal-id').value = '';
-    document.getElementById('goal-week-start').value = weekStart;
-    document.getElementById('goal-text').value = '';
-
-    if (goalId) {
-        // Редактирование
-        const goal = this.weeklyGoals.find(g => g.id == goalId);
-        if (goal) {
-            modalTitle.textContent = 'Редактировать цель';
-            deleteBtn.style.display = 'block';
-
-            document.getElementById('goal-id').value = goal.id;
-            document.getElementById('goal-text').value = goal.text;
-
-            this.currentEditId = goalId;
-        } else {
-            console.error('Goal not found:', goalId);
+        if (!modal || !modalTitle || !deleteBtn || !form) {
+            console.error('Modal elements not found');
             return;
         }
-    } else {
-        // Создание
-        modalTitle.textContent = type === 'weekly' ? 'Добавить цель на неделю' : 'Добавить цель на месяц';
-        deleteBtn.style.display = 'none';
-        this.currentEditId = null;
-    }
 
-    modal.style.display = 'flex';
-}
+        // Получаем понедельник текущей недели
+        const currentWeekDates = this.weekManager.getCurrentWeekDates();
+        if (!currentWeekDates || currentWeekDates.length === 0) {
+            console.error('No week dates found');
+            return;
+        }
+
+        const weekStart = currentWeekDates[0].toISOString().split('T')[0];
+
+        // Сбрасываем форму
+        form.reset();
+        document.getElementById('goal-id').value = '';
+        document.getElementById('goal-week-start').value = weekStart;
+        document.getElementById('goal-text').value = '';
+
+        if (goalId) {
+            // Редактирование
+            const goal = this.weeklyGoals.find(g => g.id == goalId);
+            if (goal) {
+                modalTitle.textContent = 'Редактировать цель';
+                deleteBtn.style.display = 'block';
+
+                document.getElementById('goal-id').value = goal.id;
+                document.getElementById('goal-text').value = goal.text;
+
+                this.currentEditId = goalId;
+            } else {
+                console.error('Goal not found:', goalId);
+                return;
+            }
+        } else {
+            // Создание
+            modalTitle.textContent = type === 'weekly' ? 'Добавить цель на неделю' : 'Добавить цель на месяц';
+            deleteBtn.style.display = 'none';
+            this.currentEditId = null;
+        }
+
+        modal.style.display = 'flex';
+    }
 
     updateForWeek() {
         this.loadGoals();
