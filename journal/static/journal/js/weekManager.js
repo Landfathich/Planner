@@ -65,20 +65,21 @@ export class WeekManager {
     }
 
     updateDayCard(dayCard, date, dayIndex) {
-        // Обновляем дату
+        console.log('Updating day card:', dayIndex, date);
+
         const dateElement = dayCard.querySelector('.date[data-date-format]');
         if (dateElement) {
+            console.log('Setting date to:', formatDate(date));
             dateElement.textContent = formatDate(date);
-            dateElement.removeAttribute('data-date-format'); // Убираем атрибут
+        } else {
+            console.log('Date element not found for day:', dayIndex);
         }
 
-        // Обновляем кнопку добавления задачи
         const addButton = dayCard.querySelector('.add-task-btn');
         if (addButton) {
             addButton.dataset.date = date.toISOString().split('T')[0];
         }
 
-        // Помечаем сегодняшний день
         const today = new Date();
         const isToday = date.toDateString() === today.toDateString();
         dayCard.classList.toggle('today', isToday);
