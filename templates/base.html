@@ -11,7 +11,7 @@
 <body>
 <div class="container">
     <header class="header">
-        <h1>Мой ежедневник - Неделя {{ week_number }}</h1>
+        <h1><a href="{% url 'week' %}" style="color: inherit; text-decoration: none;">Мой ежедневник - Неделя {{ week_number }}</a></h1>
         <div class="auth-links">
             {% if user.is_authenticated %}
                 <span>Вы вошли как {{ user.username }}</span>

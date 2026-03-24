@@ -62,6 +62,12 @@ class WeekView(LoginRequiredMixin, TemplateView):
         context['week_end'] = start_date + timedelta(days=6)
         context['today_date'] = today
 
+        today = timezone.now().date()
+        start_date = today - timedelta(days=today.weekday())
+        profile = self.request.user.profile
+        week_number = profile.get_current_week_number(start_date)
+        context['week_number'] = week_number
+
         return context
 
 
@@ -482,6 +488,15 @@ def delete_weekly_goal(request, goal_id):
 
 class GoalsView(LoginRequiredMixin, TemplateView):
     template_name = "journal/general_goals.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = timezone.now().date()
+        start_date = today - timedelta(days=today.weekday())
+        profile = self.request.user.profile
+        week_number = profile.get_current_week_number(start_date)
+        context['week_number'] = week_number
+        return context
 
 
 from .models import YearlyGoal, YearlyReport, MonthlyGoal, MonthlyReport
