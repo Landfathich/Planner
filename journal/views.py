@@ -16,7 +16,7 @@ from django.views.generic import CreateView
 from django.views.generic import TemplateView
 
 from .forms import CustomRegisterForm
-from .models import Task, UserProfile
+from .models import Task
 
 logger = logging.getLogger(__name__)
 
@@ -479,12 +479,12 @@ def delete_weekly_goal(request, goal_id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
+
 class GoalsView(LoginRequiredMixin, TemplateView):
     template_name = "journal/general_goals.html"
 
 
 from .models import YearlyGoal, YearlyReport, MonthlyGoal, MonthlyReport
-from datetime import date
 
 
 @login_required
@@ -502,6 +502,36 @@ def goals_years_list(request):
 
     years = sorted(list(years), reverse=True)
     return JsonResponse({'years': years})
+
+
+@login_required
+def goals_monthly_preview(request):
+    """Получить цели для указанного месяца (для превью в ежедневнике)"""
+    year = request.GET.get('year')
+    month = request.GET.get('month')
+
+    if not year or not month:
+        return JsonResponse({'error': 'year and month required'}, status=400)
+
+    try:
+        year = int(year)
+        month = int(month)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid year or month'}, status=400)
+
+    goals = MonthlyGoal.objects.filter(
+        user=request.user,
+        year=year,
+        month=month
+    )
+
+    goals_data = [{
+        'id': g.id,
+        'text': g.text,
+        'is_completed': g.is_completed
+    } for g in goals]
+
+    return JsonResponse({'goals': goals_data})
 
 
 @login_required

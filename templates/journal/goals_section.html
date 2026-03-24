@@ -21,12 +21,12 @@
         <div class="goals-column monthly-column">
             <div class="column-header">
                 <h3>Цели месяца</h3>
-                <!-- БЕЗ плюсика - только просмотр -->
+                <a href="{% url 'goals' %}" class="goals-link-btn">📅 Все цели</a>
             </div>
             <div class="goals-list" id="monthly-goals-list">
-                <!-- Заглушка для целей месяца -->
+                <!-- Цели текущего месяца будут загружаться через JS -->
                 <div class="goal-card placeholder">
-                    <a href="{% url 'goals' %}" style="color: white">Цели</a>
+                    <span>Загрузка...</span>
                 </div>
             </div>
         </div>

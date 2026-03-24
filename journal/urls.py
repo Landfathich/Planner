@@ -25,6 +25,8 @@ urlpatterns = [
     path('goals/', views.GoalsView.as_view(), name='goals'),
 
     # Goals API
+    path('api/goals/monthly/preview/', views.goals_monthly_preview, name='goals_monthly_preview'),
+
     path('api/goals/years/', views.goals_years_list, name='goals_years_list'),
     path('api/goals/years/create/', views.goals_create_year, name='goals_create_year'),
     path('api/goals/year/<int:year>/', views.goals_year_data, name='goals_year_data'),

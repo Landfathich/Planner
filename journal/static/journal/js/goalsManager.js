@@ -280,29 +280,65 @@ export class GoalsManager {
     }
 
     deleteGoal(goalId, type) {
-    if (!confirm('Удалить эту цель?')) return;
+        if (!confirm('Удалить эту цель?')) return;
 
-    fetch(`/api/weekly-goals/${goalId}/delete/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': this.getCSRFToken()
+        fetch(`/api/weekly-goals/${goalId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': this.getCSRFToken()
+            }
+        })
+            .then(async response => {
+                if (response.ok) {
+                    this.weeklyGoals = this.weeklyGoals.filter(g => g.id != goalId);
+                    this.renderWeeklyGoals();
+                    showNotification('Цель удалена', 'success');
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Delete failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting goal:', error);
+                showNotification('Ошибка при удалении', 'error');
+            });
+    }
+
+    async loadMonthlyGoalsForWeek(weekDates) {
+        // Определяем месяц по середине недели (четверг)
+        const midWeek = weekDates[3];
+        const year = midWeek.getFullYear();
+        const month = midWeek.getMonth() + 1;
+
+        try {
+            const response = await fetch(`/api/goals/monthly/preview/?year=${year}&month=${month}`);
+            if (response.ok) {
+                const data = await response.json();
+                this.renderMonthlyGoalsPreview(data.goals);
+            }
+        } catch (error) {
+            console.error('Error loading monthly goals:', error);
         }
-    })
-    .then(async response => {
-        if (response.ok) {
-            this.weeklyGoals = this.weeklyGoals.filter(g => g.id != goalId);
-            this.renderWeeklyGoals();
-            showNotification('Цель удалена', 'success');
-        } else {
-            const error = await response.json();
-            throw new Error(error.error || 'Delete failed');
+    }
+
+    renderMonthlyGoalsPreview(goals) {
+        const container = document.getElementById('monthly-goals-list');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        if (goals.length === 0) {
+            container.innerHTML = '<div class="goal-card placeholder">Нет целей на этот месяц</div>';
+            return;
         }
-    })
-    .catch(error => {
-        console.error('Error deleting goal:', error);
-        showNotification('Ошибка при удалении', 'error');
-    });
-}
+
+        goals.forEach(goal => {
+            const goalCard = document.createElement('div');
+            goalCard.className = `goal-card ${goal.is_completed ? 'completed' : ''}`;
+            goalCard.innerHTML = `<span class="goal-text">${goal.text}</span>`;
+            container.appendChild(goalCard);
+        });
+    }
 
     openGoalModal(type, goalId = null) {
         const modal = document.getElementById('goal-modal');
@@ -355,8 +391,11 @@ export class GoalsManager {
         modal.style.display = 'flex';
     }
 
-    updateForWeek() {
+    updateForWeek(weekDates) {
+        // Загружаем недельные цели
         this.loadGoals();
+        // Загружаем месячные цели для этой недели
+        this.loadMonthlyGoalsForWeek(weekDates);
     }
 
     getCSRFToken() {

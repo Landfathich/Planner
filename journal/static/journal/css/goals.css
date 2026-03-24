@@ -217,6 +217,27 @@
     flex-shrink: 0;
 }
 
+/* Кнопка перехода на страницу целей */
+.goals-link-btn {
+    background: var(--primary);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.2s;
+}
+
+.goals-link-btn:hover {
+    background: var(--primary-hover);
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
 /* Адаптация под мобильные */
 @media (max-width: 768px) {
     .goals-columns {

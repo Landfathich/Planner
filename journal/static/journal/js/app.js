@@ -45,11 +45,12 @@ class DailyPlannerApp {
     async loadAndDisplayWeek() {
         this.weekManager.updateWeekInfo();
 
+        const currentWeekDates = this.weekManager.getCurrentWeekDates();
         const tasks = await this.weekManager.loadWeekTasks(this.weekManager.currentWeekOffset);
-        this.taskManager.displayTasksForWeek(tasks, this.weekManager.getCurrentWeekDates());
+        this.taskManager.displayTasksForWeek(tasks, currentWeekDates);
 
         await this.habitTracker.updateForWeek();
-        await this.goalsManager.updateForWeek();
+        await this.goalsManager.updateForWeek(currentWeekDates);  // ← передаём даты
     }
 }
 
