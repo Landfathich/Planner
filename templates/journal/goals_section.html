@@ -18,18 +18,18 @@
         </div>
 
         <!-- Колонка целей месяца -->
-        <div class="goals-column monthly-column">
-            <div class="column-header">
-                <h3>Цели месяца</h3>
-                <a href="{% url 'goals' %}" class="goals-link-btn">📅 Все цели</a>
-            </div>
-            <div class="goals-list" id="monthly-goals-list">
-                <!-- Цели текущего месяца будут загружаться через JS -->
-                <div class="goal-card placeholder">
-                    <span>Загрузка...</span>
-                </div>
-            </div>
+        <!-- Колонка целей месяца -->
+<div class="goals-column monthly-column">
+    <div class="column-header">
+        <h3>Цели месяца <span id="current-month-name"></span></h3>
+        <a href="{% url 'goals' %}" class="goals-link-btn">📅 Все цели</a>
+    </div>
+    <div class="goals-list" id="monthly-goals-list">
+        <div class="goal-card placeholder">
+            <span>Загрузка...</span>
         </div>
+    </div>
+</div>
     </div>
 </div>
 

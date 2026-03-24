@@ -310,6 +310,15 @@ export class GoalsManager {
         const year = midWeek.getFullYear();
         const month = midWeek.getMonth() + 1;
 
+        const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+
+        // Обновляем название месяца в заголовке
+        const monthNameSpan = document.getElementById('current-month-name');
+        if (monthNameSpan) {
+            monthNameSpan.textContent = monthNames[month - 1];
+        }
+
         try {
             const response = await fetch(`/api/goals/monthly/preview/?year=${year}&month=${month}`);
             if (response.ok) {
