@@ -1,0 +1,201 @@
+.schedule-container {
+    padding: 20px;
+    background: var(--site-bg);
+    min-height: calc(100vh - 120px);
+}
+
+.schedule-container h1 {
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.schedule-layout {
+    display: flex;
+    gap: 20px;
+}
+
+/* Левая панель - шаблоны */
+.templates-panel {
+    width: 300px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 15px;
+    flex-shrink: 0;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.panel-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--text-primary);
+}
+
+.add-template-btn {
+    background: var(--primary);
+    color: var(--text-primary);
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.templates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.template-card {
+    background: var(--light);
+    border-radius: 6px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.template-card:hover {
+    transform: translateX(2px);
+    background: var(--card-bg);
+}
+
+.template-card.active {
+    border-left-color: var(--primary);
+    background: var(--card-bg);
+}
+
+.template-card.default {
+    border-left-color: var(--accent-color);
+}
+
+.template-name {
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.template-description {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Правая панель - дни */
+.days-panel {
+    flex: 1;
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.days-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.day-card {
+    background: var(--light);
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.day-name {
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.day-template {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.day-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.day-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: var(--text-secondary);
+}
+
+.day-actions button:hover {
+    background: var(--card-bg);
+}
+
+/* Модальное окно для пунктов расписания */
+.modal-large {
+    max-width: 600px;
+    width: 90%;
+}
+
+.schedule-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: var(--light);
+    border-radius: 4px;
+}
+
+.schedule-item input {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 8px;
+    border-radius: 4px;
+}
+
+.schedule-item .item-time {
+    width: 80px;
+}
+
+.schedule-item .item-title {
+    flex: 1;
+}
+
+.schedule-item .remove-item {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.add-item-btn {
+    background: var(--primary);
+    color: var(--text-primary);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.placeholder {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 20px;
+}

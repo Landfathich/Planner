@@ -42,4 +42,6 @@ urlpatterns = [
     path('api/goals/monthly/<int:goal_id>/carry/', views.goals_carry_monthly_goal, name='goals_carry_monthly_goal'),
     path('api/goals/report/yearly/update/', views.goals_update_yearly_report, name='goals_update_yearly_report'),
     path('api/goals/report/monthly/update/', views.goals_update_monthly_report, name='goals_update_monthly_report'),
+
+    path('schedule/', views.ScheduleView.as_view(), name='schedule'),
 ]

@@ -94,3 +94,20 @@ class MonthlyGoalAdmin(admin.ModelAdmin):
 class MonthlyReportAdmin(admin.ModelAdmin):
     list_display = ['user', 'year', 'month', 'created_at']
     list_filter = ['year', 'month']
+
+from .models import ScheduleTemplate, ScheduleItem, DailySchedule
+
+@admin.register(ScheduleTemplate)
+class ScheduleTemplateAdmin(admin.ModelAdmin):
+    list_display = ['name', 'user', 'is_default']
+    list_filter = ['is_default']
+
+@admin.register(ScheduleItem)
+class ScheduleItemAdmin(admin.ModelAdmin):
+    list_display = ['template', 'time', 'title', 'order']
+    list_filter = ['template']
+
+@admin.register(DailySchedule)
+class DailyScheduleAdmin(admin.ModelAdmin):
+    list_display = ['user', 'day_of_week', 'template', 'active']
+    list_filter = ['day_of_week', 'active']

@@ -196,3 +196,62 @@ class MonthlyReport(models.Model):
 
     def __str__(self):
         return f"Отчёт за {self.year}-{self.month}"
+
+class ScheduleTemplate(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schedule_templates')
+    name = models.CharField(max_length=200, verbose_name="Название шаблона")
+    description = models.TextField(blank=True, null=True, verbose_name="Описание")
+    is_default = models.BooleanField(default=False, verbose_name="Шаблон по умолчанию")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-is_default', 'name']
+        verbose_name = "Шаблон расписания"
+        verbose_name_plural = "Шаблоны расписания"
+
+    def __str__(self):
+        return self.name
+
+
+class ScheduleItem(models.Model):
+    template = models.ForeignKey(ScheduleTemplate, on_delete=models.CASCADE, related_name='items')
+    time = models.CharField(max_length=10, verbose_name="Время (например, 09:00)")
+    title = models.CharField(max_length=200, verbose_name="Название")
+    description = models.TextField(blank=True, null=True, verbose_name="Описание")
+    order = models.IntegerField(default=0, verbose_name="Порядок")
+
+    class Meta:
+        ordering = ['order', 'time']
+        verbose_name = "Пункт расписания"
+        verbose_name_plural = "Пункты расписания"
+
+    def __str__(self):
+        return f"{self.time} - {self.title}"
+
+
+class DailySchedule(models.Model):
+    DAYS_OF_WEEK = [
+        (0, 'Понедельник'),
+        (1, 'Вторник'),
+        (2, 'Среда'),
+        (3, 'Четверг'),
+        (4, 'Пятница'),
+        (5, 'Суббота'),
+        (6, 'Воскресенье'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='daily_schedules')
+    day_of_week = models.IntegerField(choices=DAYS_OF_WEEK, verbose_name="День недели")
+    template = models.ForeignKey(ScheduleTemplate, on_delete=models.CASCADE, verbose_name="Шаблон")
+    active = models.BooleanField(default=True, verbose_name="Активно")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['user', 'day_of_week']
+        verbose_name = "Расписание на день"
+        verbose_name_plural = "Расписания на дни"
+
+    def __str__(self):
+        return f"{self.get_day_of_week_display()}: {self.template.name}"

@@ -9,6 +9,22 @@ export class TaskManager {
         this.setupDragAndDrop();
     }
 
+    updateDayProgress(dayCard, tasks, doneTasks) {
+        const total = tasks.length;
+        const done = doneTasks.length;
+        const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+        const progressFill = dayCard.querySelector('.progress-fill');
+        const progressPercent = dayCard.querySelector('.progress-percent');
+
+        if (progressFill) {
+            progressFill.style.width = `${percent}%`;
+        }
+        if (progressPercent) {
+            progressPercent.textContent = `${percent}%`;
+        }
+    }
+
     setupDragAndDrop() {
         // Обработчик начала перетаскивания (делегирование, т.к. задачи динамические)
         document.addEventListener('dragstart', (e) => {
@@ -488,10 +504,11 @@ export class TaskManager {
             const pointsElement = dayCard.querySelector('.points');
 
             if (pointsElement) {
-                pointsElement.textContent = tasks.length > 0
-                    ? `${doneTasks.length} / ${tasks.length} задач`
-                    : `Задач нет`;
+                pointsElement.textContent = `${doneTasks.length} / ${tasks.length} задач`;
             }
+
+            // Обновляем прогресс-бар
+            this.updateDayProgress(dayCard, tasks, doneTasks);
         });
     }
 
@@ -507,26 +524,36 @@ export class TaskManager {
         const modal = document.getElementById('task-modal');
         const closeBtn = modal.querySelector('.close');
         const form = document.getElementById('task-form');
+        const modalTitle = document.getElementById('task-modal-title');
 
-        // Обработчики для кнопок добавления задач (добавляются динамически, поэтому делегирование)
+        // Обработчики для кнопок добавления задач
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('add-task-btn')) {
-                console.log('Add task button clicked:', e.target);
-                console.log('Data-date:', e.target.dataset.date);
-                console.log('Task type:', e.target.dataset.taskType);
+                const taskDate = e.target.dataset.date;
+                const taskType = e.target.dataset.taskType;
 
-                document.getElementById('task-date').value = e.target.dataset.date;
-                document.getElementById('task-type').value = e.target.dataset.taskType;
+                // Устанавливаем дату и тип
+                document.getElementById('task-date').value = taskDate;
+                document.getElementById('task-type').value = taskType;
+
+                // Меняем заголовок в зависимости от типа задачи
+                if (taskType === 'week') {
+                    modalTitle.textContent = 'Создание недельной задачи';
+                } else {
+                    const date = new Date(taskDate);
+                    const dayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+                    const dayName = dayNames[date.getDay() === 0 ? 6 : date.getDay() - 1];
+                    modalTitle.textContent = `Создание задачи на ${dayName}`;
+                }
+
                 modal.style.display = 'flex';
             }
         });
 
         closeBtn.addEventListener('click', () => modal.style.display = 'none');
-
         window.addEventListener('click', (e) => {
             if (e.target === modal) modal.style.display = 'none';
         });
-
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             this.createTask();

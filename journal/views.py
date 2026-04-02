@@ -50,6 +50,18 @@ class CustomLogoutView(LogoutView):
     next_page = reverse_lazy('login')
 
 
+class ScheduleView(LoginRequiredMixin, TemplateView):
+    template_name = "journal/schedule.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = timezone.now().date()
+        start_date = today - timedelta(days=today.weekday())
+        profile = self.request.user.profile
+        week_number = profile.get_current_week_number(start_date)
+        context['week_number'] = week_number
+        return context
+
 class WeekView(LoginRequiredMixin, TemplateView):
     template_name = "journal/week.html"
 

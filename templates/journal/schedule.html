@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}График дня{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'journal/css/schedule.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="schedule-container">
+    <h1>График дня</h1>
+    
+    <!-- Две колонки -->
+    <div class="schedule-layout">
+        <!-- Левая колонка - шаблоны -->
+        <div class="templates-panel">
+            <div class="panel-header">
+                <h2>Шаблоны</h2>
+                <button class="add-template-btn" id="add-template-btn">+</button>
+            </div>
+            <div class="templates-list" id="templates-list">
+                <!-- Шаблоны будут загружаться через JS -->
+                <div class="template-card placeholder">Загрузка...</div>
+            </div>
+        </div>
+        
+        <!-- Правая колонка - дни недели -->
+        <div class="days-panel">
+            <div class="panel-header">
+                <h2>Расписание по дням</h2>
+            </div>
+            <div class="days-list" id="days-list">
+                <!-- Дни недели будут загружаться через JS -->
+                <div class="day-card placeholder">Загрузка...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для создания/редактирования шаблона -->
+<div id="template-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3 class="modal-title" id="template-modal-title">Создать шаблон</h3>
+        <form id="template-form">
+            <input type="hidden" id="template-id" name="id">
+            <div class="form-group">
+                <label for="template-name">Название шаблона:</label>
+                <input type="text" id="template-name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="template-description">Описание:</label>
+                <textarea id="template-description" name="description" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="template-default" name="is_default">
+                    <span>Шаблон по умолчанию</span>
+                </label>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="danger-button" id="delete-template-btn" style="display: none;">Удалить</button>
+                <button type="submit" class="styled-button">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования пунктов расписания -->
+<div id="schedule-items-modal" class="modal" style="display: none;">
+    <div class="modal-content modal-large">
+        <span class="close">&times;</span>
+        <h3 class="modal-title" id="schedule-items-title">Редактировать расписание</h3>
+        <div id="schedule-items-list"></div>
+        <button class="add-item-btn" id="add-item-btn">+ Добавить пункт</button>
+        <div class="form-actions">
+            <button class="styled-button" id="save-schedule-items-btn">Сохранить</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'journal/js/schedule.js' %}" type="module"></script>
+{% endblock %}
