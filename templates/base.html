@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ежедневник | {% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'journal/css/base.css' %}">
+<link rel="stylesheet" href="{% static 'journal/css/modal.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="{% if request.resolver_match.url_name in 'login,register' %}auth-page{% endif %}">
@@ -28,10 +29,10 @@
                 <span class="nav-icon">🎯</span>
                 <span>Цели</span>
             </a>
-            <a href="{% url 'schedule' %}" class="nav-link {% if request.resolver_match.url_name == 'schedule' %}active{% endif %}">
-                <span class="nav-icon">⏰</span>
-                <span>График</span>
-            </a>
+            <a href="{% url 'today_schedule' %}" class="nav-link {% if request.resolver_match.url_name == 'today_schedule' %}active{% endif %}">
+    <span class="nav-icon">⏰</span>
+    <span>График</span>
+</a>
         </nav>
 
         <div class="user-panel">

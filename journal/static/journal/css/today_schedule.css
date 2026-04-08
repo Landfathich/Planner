@@ -1,0 +1,245 @@
+.today-schedule-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.date-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.date-icon {
+    font-size: 32px;
+}
+
+.date-info h2 {
+    margin: 0;
+    font-size: 24px;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.schedule-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.settings-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    padding: 8px 20px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.settings-btn:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+/* Прогресс бар */
+.schedule-progress {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-color);
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.progress-label {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.progress-percent {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: var(--light);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--success));
+    border-radius: 10px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+/* Таймлайн */
+.schedule-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.schedule-item-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px 20px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.schedule-item-card:hover {
+    transform: translateX(4px);
+    border-color: var(--primary);
+}
+
+.schedule-item-card.completed {
+    opacity: 0.6;
+}
+
+.schedule-item-card.completed .item-title {
+    text-decoration: line-through;
+}
+
+.item-checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.item-checkbox:hover {
+    border-color: var(--primary);
+    transform: scale(1.05);
+}
+
+.item-checkbox.checked {
+    background: var(--success);
+    border-color: var(--success);
+}
+
+.item-checkbox.checked::after {
+    content: "✓";
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.item-time {
+    min-width: 70px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.item-content {
+    flex: 1;
+}
+
+.item-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.item-description {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.item-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.item-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.item-actions button:hover {
+    background: var(--light);
+}
+
+.item-edit:hover {
+    color: var(--primary);
+}
+
+.item-delete:hover {
+    color: var(--danger);
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+    .today-schedule-container {
+        padding: 16px;
+    }
+
+    .schedule-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .schedule-item-card {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .item-time {
+        width: 100%;
+    }
+
+    .item-actions {
+        margin-left: auto;
+    }
+}

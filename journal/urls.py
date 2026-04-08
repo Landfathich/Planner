@@ -54,4 +54,12 @@ path('api/schedule/templates/<int:template_id>/items/', views.schedule_template_
 path('api/schedule/templates/<int:template_id>/items/update/', views.schedule_update_items, name='schedule_update_items'),
 path('api/schedule/daily/', views.schedule_daily_list, name='schedule_daily_list'),
 path('api/schedule/daily/update/', views.schedule_update_daily, name='schedule_update_daily'),
-]
+
+path('today/', views.TodayScheduleView.as_view(), name='today_schedule'),
+
+# Today Schedule API
+path('api/schedule/today/', views.today_schedule, name='api_today_schedule'),  # ← поменял имя
+path('api/schedule/today/toggle/', views.today_schedule_toggle, name='api_today_schedule_toggle'),
+path('api/schedule/today/item/<int:item_id>/delete/', views.today_schedule_delete_item, name='api_today_schedule_delete_item'),
+path('api/schedule/today/item/<int:item_id>/update/', views.today_schedule_update_item, name='api_today_schedule_update_item'),
+    ]

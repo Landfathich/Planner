@@ -190,6 +190,143 @@ def schedule_daily_list(request):
     return JsonResponse({'daily_schedules': data})
 
 
+class TodayScheduleView(LoginRequiredMixin, TemplateView):
+    template_name = "journal/today_schedule.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = timezone.now().date()
+        start_date = today - timedelta(days=today.weekday())
+        profile = self.request.user.profile
+        week_number = profile.get_current_week_number(start_date)
+        context['week_number'] = week_number
+        return context
+
+
+from .models import ScheduleTemplate, ScheduleItem, ScheduleItemCompletion, DailySchedule
+from datetime import date
+
+
+@login_required
+def today_schedule(request):
+    """Получить расписание на сегодня"""
+    today = timezone.now().date()
+    day_of_week = today.weekday()  # 0 = понедельник, 6 = воскресенье
+
+    # Получаем шаблон для сегодняшнего дня
+    daily_schedule = DailySchedule.objects.filter(
+        user=request.user,
+        day_of_week=day_of_week,
+        active=True
+    ).first()
+
+    items = []
+    completions = {}
+
+    if daily_schedule:
+        template = daily_schedule.template
+        items = ScheduleItem.objects.filter(template=template).order_by('order', 'time')
+
+        # Получаем статусы выполнения для каждого пункта
+        for item in items:
+            completion = ScheduleItemCompletion.objects.filter(
+                user=request.user,
+                schedule_item=item,
+                date=today
+            ).first()
+            completions[item.id] = completion.is_completed if completion else False
+
+    items_data = [{
+        'id': item.id,
+        'time': item.time,
+        'title': item.title,
+        'description': item.description
+    } for item in items]
+
+    return JsonResponse({
+        'items': items_data,
+        'completions': completions,
+        'has_template': daily_schedule is not None
+    })
+
+
+@login_required
+def today_schedule_toggle(request):
+    """Отметить/снять отметку выполнения пункта"""
+    data = json.loads(request.body)
+    item_id = data.get('item_id')
+    today_date = data.get('date')
+
+    if not item_id or not today_date:
+        return JsonResponse({'error': 'item_id and date required'}, status=400)
+
+    try:
+        item = ScheduleItem.objects.get(id=item_id)
+
+        completion, created = ScheduleItemCompletion.objects.get_or_create(
+            user=request.user,
+            schedule_item=item,
+            date=today_date,
+            defaults={'is_completed': True}
+        )
+
+        if not created:
+            completion.is_completed = not completion.is_completed
+            completion.completed_at = timezone.now() if completion.is_completed else None
+            completion.save()
+
+        return JsonResponse({
+            'success': True,
+            'is_completed': completion.is_completed
+        })
+
+    except ScheduleItem.DoesNotExist:
+        return JsonResponse({'error': 'Item not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+def today_schedule_delete_item(request, item_id):
+    """Удалить пункт из расписания (только для сегодняшнего дня)"""
+    try:
+        item = ScheduleItem.objects.get(id=item_id)
+        # Проверяем, что этот пункт принадлежит шаблону пользователя
+        if item.template.user != request.user:
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+
+        item.delete()
+        return JsonResponse({'success': True})
+
+    except ScheduleItem.DoesNotExist:
+        return JsonResponse({'error': 'Item not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@login_required
+def today_schedule_update_item(request, item_id):
+    """Обновить пункт расписания"""
+    data = json.loads(request.body)
+
+    try:
+        item = ScheduleItem.objects.get(id=item_id)
+
+        if item.template.user != request.user:
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+
+        item.time = data.get('time', item.time)
+        item.title = data.get('title', item.title)
+        item.description = data.get('description', item.description)
+        item.save()
+
+        return JsonResponse({'success': True})
+
+    except ScheduleItem.DoesNotExist:
+        return JsonResponse({'error': 'Item not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+    
 @login_required
 def schedule_update_daily(request):
     """Обновить расписание на день"""
