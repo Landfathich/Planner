@@ -1,28 +1,163 @@
 .header {
-    background-color: var(--primary-dark);
-    color: var(--text-primary);
-    padding: 1rem;
+    background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2), var(--gradient-3));
+    padding: 12px 24px;
+    border-radius: 16px;
+    margin-bottom: 24px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    flex: 0 0 auto;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
 }
 
-.header h1 {
-    font-size: 1.8rem;
-    margin: 0;
+/* Логотип */
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    transition: transform 0.2s ease;
 }
 
-.auth-links {
+.logo-link:hover {
+    transform: scale(1.02);
+}
+
+.logo-icon {
+    font-size: 32px;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.logo-text {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff, var(--text-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 1px;
+}
+
+/* Навигация */
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 30px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    background: transparent;
+}
+
+.nav-link .nav-icon {
+    font-size: 18px;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.nav-link.active {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Панель пользователя */
+.user-panel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+}
+
+.user-icon {
+    font-size: 18px;
+}
+
+.username {
+    font-weight: 600;
     font-size: 14px;
 }
 
-.auth-links a {
-    color: var(--text-primary);
-    text-decoration: none;
-    margin-left: 10px;
+.logout-form {
+    margin: 0;
 }
 
-.auth-links a:hover {
-    text-decoration: underline;
+.logout-btn, .login-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    padding: 6px 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.logout-btn:hover, .login-link:hover {
+    background: rgba(0, 0, 0, 0.5);
+    transform: translateY(-1px);
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        padding: 16px;
+    }
+
+    .logo-text {
+        font-size: 18px;
+    }
+
+    .nav-link span:last-child {
+        display: none;
+    }
+
+    .nav-link .nav-icon {
+        font-size: 20px;
+    }
+
+    .nav-link {
+        padding: 8px 12px;
+    }
+
+    .username {
+        display: none;
+    }
+
+    .user-info {
+        gap: 4px;
+    }
 }

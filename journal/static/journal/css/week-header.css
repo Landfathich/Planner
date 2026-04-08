@@ -2,37 +2,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 15px;
-    padding: 15px;
-    background-color: var(--header-bg);
-    border-radius: 12px;
+    gap: 20px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--card-bg), var(--accent-bg));
+    border-radius: 20px;
     box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
 }
 
 .week-navigation {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-direction: row;
-    gap: 15px;
-    min-width: 400px;
-    flex-grow: 1;
-}
-
-.week-navigation h2 {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    min-width: 250px;
-    text-align: center;
-}
-
-#week-range {
-    display: inline-block;
-    text-align: center;
-    font-weight: 500;
-    color: var(--text-secondary);
+    gap: 20px;
+    flex: 1;
 }
 
 #week-nav-left {
@@ -40,44 +22,64 @@
     gap: 10px;
 }
 
+.week-navigation h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+    text-align: center;
+}
+
+#week-range {
+    color: var(--primary);
+    font-weight: 500;
+}
+
 .nav-button {
-    padding: 8px 16px;
+    padding: 8px 18px;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: 30px;
     font-weight: 500;
     transition: all 0.2s ease;
-    background-color: var(--header-bg);
+    background: var(--card-bg);
     color: var(--text-primary);
     cursor: pointer;
+    font-size: 14px;
 }
 
 .nav-button:hover {
-    background-color: var(--bg);
-    border-color: var(--text-secondary);
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    transform: translateY(-1px);
 }
 
 .styled-button {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
+    padding: 8px 20px;
+    border-radius: 30px;
     cursor: pointer;
     font-weight: 500;
+    transition: all 0.2s ease;
 }
 
 .styled-button:hover {
-    background-color: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(136, 192, 208, 0.3);
 }
 
 .week-stats {
-    padding: 8px 16px;
-    background-color: var(--accent-bg);
-    border-radius: 6px;
-    font-weight: 500;
+    padding: 8px 20px;
+    background: linear-gradient(135deg, var(--accent-bg), var(--card-bg));
+    border-radius: 30px;
+    font-weight: 600;
+    border: 1px solid var(--border-color);
 }
 
 .week-stats .points {
     color: var(--accent-color);
-    font-size: 1.1rem;
+    font-size: 16px;
 }

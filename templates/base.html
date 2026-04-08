@@ -8,35 +8,66 @@
     <link rel="stylesheet" href="{% static 'journal/css/base.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<body>
-<div class="container">
+<body class="{% if request.resolver_match.url_name in 'login,register' %}auth-page{% endif %}">
+<div class="container {% if request.resolver_match.url_name in 'login,register' %}auth-container{% endif %}">
+    {% if request.resolver_match.url_name not in 'login,register' %}
     <header class="header">
-        <h1><a href="{% url 'week' %}" style="color: inherit; text-decoration: none;">Мой ежедневник - Неделя {{ week_number }}</a></h1>
-        <div class="auth-links">
+        <div class="logo">
+            <a href="{% url 'week' %}" class="logo-link">
+                <span class="logo-icon">📅</span>
+                <span class="logo-text">Ежедневник</span>
+            </a>
+        </div>
+
+        <nav class="main-nav">
+            <a href="{% url 'week' %}" class="nav-link {% if request.resolver_match.url_name == 'week' %}active{% endif %}">
+                <span class="nav-icon">🏠</span>
+                <span>Неделя</span>
+            </a>
+            <a href="{% url 'goals' %}" class="nav-link {% if request.resolver_match.url_name == 'goals' %}active{% endif %}">
+                <span class="nav-icon">🎯</span>
+                <span>Цели</span>
+            </a>
+            <a href="{% url 'schedule' %}" class="nav-link {% if request.resolver_match.url_name == 'schedule' %}active{% endif %}">
+                <span class="nav-icon">⏰</span>
+                <span>График</span>
+            </a>
+        </nav>
+
+        <div class="user-panel">
             {% if user.is_authenticated %}
-                <span>Вы вошли как {{ user.username }}</span>
-                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                <div class="user-info">
+                    <span class="user-icon">👤</span>
+                    <span class="username">{{ user.username }}</span>
+                </div>
+                <form action="{% url 'logout' %}" method="post" class="logout-form">
                     {% csrf_token %}
-                    <button type="submit"
-                            style="background: none; border: none; color: #333; cursor: pointer; text-decoration: underline;">
-                        Выйти
+                    <button type="submit" class="logout-btn">
+                        <span class="nav-icon">🚪</span>
+                        <span>Выйти</span>
                     </button>
                 </form>
             {% else %}
-                <a href="{% url 'login' %}">Войти</a>
+                <a href="{% url 'login' %}" class="login-link">
+                    <span class="nav-icon">🔑</span>
+                    <span>Войти</span>
+                </a>
             {% endif %}
         </div>
     </header>
+    {% endif %}
 
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 
+    {% if request.resolver_match.url_name not in 'login,register' %}
     <footer class="footer">
         {% if user.is_authenticated %}
             <p>Неделя <span class="week-number">#{{ week_number }}</span></p>
         {% endif %}
     </footer>
+    {% endif %}
 
     <!-- Блок для модальных окон -->
     {% block modals %}{% endblock %}

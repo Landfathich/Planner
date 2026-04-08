@@ -20,24 +20,24 @@
                 <button class="add-template-btn" id="add-template-btn">+</button>
             </div>
             <div class="templates-list" id="templates-list">
-                <!-- Шаблоны будут загружаться через JS -->
                 <div class="template-card placeholder">Загрузка...</div>
             </div>
         </div>
-        
+
         <!-- Правая колонка - дни недели -->
         <div class="days-panel">
             <div class="panel-header">
                 <h2>Расписание по дням</h2>
             </div>
             <div class="days-list" id="days-list">
-                <!-- Дни недели будут загружаться через JS -->
                 <div class="day-card placeholder">Загрузка...</div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block modals %}
 <!-- Модальное окно для создания/редактирования шаблона -->
 <div id="template-modal" class="modal" style="display: none;">
     <div class="modal-content">
@@ -76,6 +76,23 @@
         <button class="add-item-btn" id="add-item-btn">+ Добавить пункт</button>
         <div class="form-actions">
             <button class="styled-button" id="save-schedule-items-btn">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для выбора шаблона дня -->
+<div id="day-schedule-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3 class="modal-title" id="day-schedule-title">Выбрать шаблон</h3>
+        <div class="form-group">
+            <label for="day-template-select">Шаблон:</label>
+            <select id="day-template-select" class="template-select">
+                <option value="">— Не выбран —</option>
+            </select>
+        </div>
+        <div class="form-actions">
+            <button class="styled-button" id="save-day-schedule-btn">Сохранить</button>
         </div>
     </div>
 </div>

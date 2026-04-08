@@ -1,6 +1,7 @@
+/* Login Page - в стиле приложения */
 .login-page {
-    min-height: 85vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--site-bg) 0%, #1a1e26 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -12,11 +13,12 @@
     display: flex;
     max-width: 1000px;
     width: 100%;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    background: var(--card-bg);
+    border-radius: 24px;
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
     min-height: 600px;
+    border: 1px solid var(--border-color);
 }
 
 /* Left Side - Login Form */
@@ -34,15 +36,19 @@
 }
 
 .login-header h1 {
-    color: #333;
+    color: var(--text-primary);
     font-size: 2.2rem;
     font-weight: 700;
     margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .login-header p {
-    color: #666;
-    font-size: 1.1rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
 }
 
 /* Form Styles */
@@ -53,55 +59,58 @@
 }
 
 .form-group {
-    margin-bottom: 25px;
+    margin-bottom: 24px;
 }
 
 .form-label {
     display: block;
     margin-bottom: 8px;
-    color: #333;
+    color: var(--text-primary);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
 .form-label i {
-    color: #667eea;
-    font-size: 1.1rem;
+    color: var(--primary);
+    font-size: 1rem;
+    width: 20px;
 }
 
 .form-input {
     width: 100%;
-    padding: 15px 20px;
-    border: 2px solid #e1e5e9;
+    padding: 14px 18px;
+    border: 2px solid var(--border-color);
     border-radius: 12px;
     font-size: 1rem;
     transition: all 0.3s ease;
-    background: #f8f9fa;
+    background: var(--light);
+    color: var(--text-primary);
 }
 
 .form-input:focus {
     outline: none;
-    border-color: #667eea;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--primary);
+    background: var(--card-bg);
+    box-shadow: 0 0 0 3px rgba(136, 192, 208, 0.1);
 }
 
 .form-input::placeholder {
-    color: #a0a4a8;
+    color: var(--text-secondary);
+    opacity: 0.6;
 }
 
 /* Error Messages */
 .error-message {
-    color: #e74c3c;
-    font-size: 0.85rem;
-    margin-top: 5px;
-    padding: 8px 12px;
-    background: #fdf2f2;
-    border-radius: 6px;
-    border-left: 3px solid #e74c3c;
+    color: var(--danger);
+    font-size: 0.8rem;
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: rgba(191, 97, 106, 0.1);
+    border-radius: 8px;
+    border-left: 3px solid var(--danger);
 }
 
 .non-field-errors {
@@ -111,12 +120,12 @@
 /* Login Button */
 .login-button {
     width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 14px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     border: none;
     border-radius: 12px;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -129,7 +138,7 @@
 
 .login-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 8px 20px rgba(136, 192, 208, 0.3);
 }
 
 .login-button:active {
@@ -140,25 +149,25 @@
 .login-footer {
     text-align: center;
     margin-top: 30px;
-    color: #666;
+    color: var(--text-secondary);
 }
 
 .register-link {
-    color: #667eea;
+    color: var(--primary);
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
 }
 
 .register-link:hover {
-    color: #764ba2;
+    color: var(--accent-color);
     text-decoration: underline;
 }
 
 /* Right Side - Decoration */
 .login-decoration {
     flex: 1;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--primary-dark), var(--accent-bg));
     color: white;
     display: flex;
     align-items: center;
@@ -186,47 +195,33 @@
 .app-name {
     font-size: 2rem;
     font-weight: 700;
+    background: linear-gradient(135deg, #fff, var(--text-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .decoration-text h3 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     margin-bottom: 20px;
     font-weight: 600;
 }
 
 .decoration-text p {
-    font-size: 1.1rem;
+    font-size: 1rem;
     line-height: 1.6;
     opacity: 0.9;
 }
 
-/* Icons (using Unicode as fallback) */
-.icon-user::before {
-    content: "👤";
-}
-
-.icon-lock::before {
-    content: "🔒";
-}
-
-.icon-arrow::before {
-    content: "→";
-}
-
-/* Добавить к существующему CSS */
-.icon-email::before {
-    content: "📧";
-}
-
 /* Стили для хелп-текста пароля */
 .helptext {
-    font-size: 0.8rem;
-    color: #666;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
     margin-top: 5px;
     display: block;
 }
 
-/* Улучшенные стили для ошибок */
+/* Стили для ошибок формы */
 .errorlist {
     list-style: none;
     padding: 0;
@@ -234,12 +229,12 @@
 }
 
 .errorlist li {
-    color: #e74c3c;
-    font-size: 0.85rem;
-    padding: 8px 12px;
-    background: #fdf2f2;
-    border-radius: 6px;
-    border-left: 3px solid #e74c3c;
+    color: var(--danger);
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    background: rgba(191, 97, 106, 0.1);
+    border-radius: 8px;
+    border-left: 3px solid var(--danger);
     margin-bottom: 5px;
 }
 
@@ -273,7 +268,7 @@
     }
 
     .login-header h1 {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
     }
 
     .form-input {
@@ -281,6 +276,102 @@
     }
 
     .login-button {
-        padding: 14px;
+        padding: 12px;
     }
+}
+
+/* Специальные стили для формы регистрации */
+.register-form {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.register-form .form-group {
+    margin-bottom: 16px;
+}
+
+.register-form .helptext {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    display: block;
+    line-height: 1.3;
+}
+
+/* Кастомный скролл для формы регистрации */
+.register-form::-webkit-scrollbar {
+    width: 4px;
+}
+
+.register-form::-webkit-scrollbar-track {
+    background: var(--light);
+    border-radius: 4px;
+}
+
+.register-form::-webkit-scrollbar-thumb {
+    background: var(--primary-dark);
+    border-radius: 4px;
+}
+
+/* Уменьшаем отступы для компактности */
+.register-card {
+    padding: 30px 40px;
+}
+
+.register-card .login-header {
+    margin-bottom: 20px;
+}
+
+.register-card .login-header h1 {
+    font-size: 1.8rem;
+}
+
+.register-card .login-header p {
+    font-size: 0.9rem;
+}
+
+/* Login Page - в стиле приложения */
+.login-page {
+    min-height: 100vh;
+    width: 100%;
+    background: linear-gradient(135deg, var(--site-bg) 0%, #1a1e26 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-container {
+    display: flex;
+    max-width: 1000px;
+    width: 100%;
+    background: var(--card-bg);
+    border-radius: 24px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    min-height: auto;
+    border: 1px solid var(--border-color);
+}
+
+/* Left Side - Login Form */
+.login-card {
+    flex: 1;
+    padding: 50px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Right Side - Decoration - на всю высоту */
+.login-decoration {
+    flex: 1;
+    background: linear-gradient(135deg, var(--primary-dark), var(--accent-bg));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    min-height: 100%;
 }

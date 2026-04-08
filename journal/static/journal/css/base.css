@@ -30,8 +30,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-
-    /* Для Firefox */
     scrollbar-width: thin;
     scrollbar-color: var(--primary-dark) var(--light);
 }
@@ -40,7 +38,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: var(--dark);
-    background-color: var(--site-bg);
+    background: linear-gradient(135deg, var(--site-bg) 0%, #1a1e26 100%);
     height: 100vh;
     margin: 0;
     padding: 0;
@@ -48,44 +46,52 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     height: 100vh;
     display: flex;
     flex-direction: column;
     margin: 0 auto;
+    padding: 16px 20px;
 }
 
 .main-content {
     display: flex;
     flex-direction: column;
-    flex: 1 1 0; /* flex-grow: 1, flex-shrink: 1, flex-basis: 0 */
-    min-height: 0; /* критически важно для вложенных flex-элементов */
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    background: transparent;
 }
 
 .footer {
     text-align: center;
-    padding: 1rem 0;
+    padding: 12px 0;
+    margin-top: 16px;
     color: var(--text-secondary);
-    flex: 0 0 auto;
+    font-size: 12px;
+    border-top: 1px solid var(--border-color);
+    background: transparent;
+    flex-shrink: 0;
 }
 
 #notification {
     position: fixed;
-    bottom: 0;
+    bottom: 30px;
     left: 50%;
-    background-color: #f44336;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 12px 24px;
+    border-radius: 50px;
+    box-shadow: var(--shadow-sm);
     z-index: 1000;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition: opacity 0.3s ease;
     opacity: 0;
-    transform: translateX(-50%) translateY(-50%);
     display: none;
-    min-width: 300px;
+    min-width: 250px;
     text-align: center;
     font-weight: 500;
+    backdrop-filter: blur(8px);
 }
 
 ::-webkit-scrollbar {
@@ -104,4 +110,27 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary);
+}
+
+/* Стили для страниц авторизации (без ограничений) */
+body.auth-page {
+    height: auto;
+    min-height: 100vh;
+    overflow: auto;
+    background: linear-gradient(135deg, var(--site-bg) 0%, #1a1e26 100%);
+}
+
+.container.auth-container {
+    max-width: none;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+
+.auth-container .main-content {
+    overflow: visible;
+    min-height: auto;
+    padding: 0;
 }

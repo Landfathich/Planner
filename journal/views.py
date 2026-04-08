@@ -62,6 +62,153 @@ class ScheduleView(LoginRequiredMixin, TemplateView):
         context['week_number'] = week_number
         return context
 
+
+from .models import ScheduleTemplate, ScheduleItem, DailySchedule
+
+
+@login_required
+def schedule_templates_list(request):
+    """Получить список шаблонов пользователя"""
+    templates = ScheduleTemplate.objects.filter(user=request.user)
+    data = [{
+        'id': t.id,
+        'name': t.name,
+        'description': t.description,
+        'is_default': t.is_default
+    } for t in templates]
+    return JsonResponse({'templates': data})
+
+
+@login_required
+def schedule_create_template(request):
+    """Создать новый шаблон"""
+    data = json.loads(request.body)
+
+    # Если новый шаблон устанавливается как default, снимаем default с остальных
+    if data.get('is_default'):
+        ScheduleTemplate.objects.filter(user=request.user, is_default=True).update(is_default=False)
+
+    template = ScheduleTemplate.objects.create(
+        user=request.user,
+        name=data['name'],
+        description=data.get('description', ''),
+        is_default=data.get('is_default', False)
+    )
+
+    return JsonResponse({
+        'id': template.id,
+        'name': template.name,
+        'description': template.description,
+        'is_default': template.is_default
+    })
+
+
+@login_required
+def schedule_update_template(request, template_id):
+    """Обновить шаблон"""
+    template = ScheduleTemplate.objects.get(id=template_id, user=request.user)
+    data = json.loads(request.body)
+
+    if data.get('is_default'):
+        ScheduleTemplate.objects.filter(user=request.user, is_default=True).exclude(id=template_id).update(
+            is_default=False)
+
+    template.name = data.get('name', template.name)
+    template.description = data.get('description', template.description)
+    template.is_default = data.get('is_default', template.is_default)
+    template.save()
+
+    return JsonResponse({
+        'id': template.id,
+        'name': template.name,
+        'description': template.description,
+        'is_default': template.is_default
+    })
+
+
+@login_required
+def schedule_delete_template(request, template_id):
+    """Удалить шаблон"""
+    template = ScheduleTemplate.objects.get(id=template_id, user=request.user)
+    template.delete()
+    return JsonResponse({'success': True})
+
+
+@login_required
+def schedule_template_items(request, template_id):
+    """Получить пункты расписания шаблона"""
+    items = ScheduleItem.objects.filter(template_id=template_id)
+    data = [{
+        'id': i.id,
+        'time': i.time,
+        'title': i.title,
+        'description': i.description,
+        'order': i.order
+    } for i in items]
+    return JsonResponse({'items': data})
+
+
+@login_required
+def schedule_update_items(request, template_id):
+    """Обновить все пункты расписания шаблона"""
+    data = json.loads(request.body)
+    items = data.get('items', [])
+
+    # Удаляем старые пункты
+    ScheduleItem.objects.filter(template_id=template_id).delete()
+
+    # Создаём новые
+    for idx, item in enumerate(items):
+        ScheduleItem.objects.create(
+            template_id=template_id,
+            time=item.get('time', ''),
+            title=item.get('title', ''),
+            description=item.get('description', ''),
+            order=idx
+        )
+
+    return JsonResponse({'success': True})
+
+
+@login_required
+def schedule_daily_list(request):
+    """Получить расписание на все дни недели"""
+    schedules = DailySchedule.objects.filter(user=request.user)
+    data = {}
+    for s in schedules:
+        data[s.day_of_week] = {
+            'template_id': s.template.id,
+            'template_name': s.template.name
+        }
+
+    # Добавляем все дни недели
+    days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
+    for i, day in enumerate(days):
+        if i not in data:
+            data[i] = None
+
+    return JsonResponse({'daily_schedules': data})
+
+
+@login_required
+def schedule_update_daily(request):
+    """Обновить расписание на день"""
+    data = json.loads(request.body)
+    day_of_week = data.get('day_of_week')
+    template_id = data.get('template_id')
+
+    if template_id:
+        template = ScheduleTemplate.objects.get(id=template_id, user=request.user)
+        schedule, created = DailySchedule.objects.update_or_create(
+            user=request.user,
+            day_of_week=day_of_week,
+            defaults={'template': template}
+        )
+    else:
+        DailySchedule.objects.filter(user=request.user, day_of_week=day_of_week).delete()
+
+    return JsonResponse({'success': True})
+
 class WeekView(LoginRequiredMixin, TemplateView):
     template_name = "journal/week.html"
 

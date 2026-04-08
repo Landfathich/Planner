@@ -44,4 +44,14 @@ urlpatterns = [
     path('api/goals/report/monthly/update/', views.goals_update_monthly_report, name='goals_update_monthly_report'),
 
     path('schedule/', views.ScheduleView.as_view(), name='schedule'),
+
+# Schedule API
+path('api/schedule/templates/', views.schedule_templates_list, name='schedule_templates_list'),
+path('api/schedule/templates/create/', views.schedule_create_template, name='schedule_create_template'),
+path('api/schedule/templates/<int:template_id>/update/', views.schedule_update_template, name='schedule_update_template'),
+path('api/schedule/templates/<int:template_id>/delete/', views.schedule_delete_template, name='schedule_delete_template'),
+path('api/schedule/templates/<int:template_id>/items/', views.schedule_template_items, name='schedule_template_items'),
+path('api/schedule/templates/<int:template_id>/items/update/', views.schedule_update_items, name='schedule_update_items'),
+path('api/schedule/daily/', views.schedule_daily_list, name='schedule_daily_list'),
+path('api/schedule/daily/update/', views.schedule_update_daily, name='schedule_update_daily'),
 ]
